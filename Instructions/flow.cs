@@ -34,7 +34,7 @@ public class Flow
             {
                 if (b is VarList vl)
                 {
-                    VarList l = new VarList();
+                    VarList l = new();
                     for (var i = 0; i < vl.data.Count; i++) l.data.Add(a);
                     ip.stack.Push(l);
                     return;
@@ -46,7 +46,7 @@ public class Flow
                         a = Stack.VarToRange(a);
                     }
                     VarList al = a as VarList;
-                    VarList l = new VarList();
+                    VarList l = new();
                     for (var i = 0; i < al.data.Count; i++) l.data.Add(b);
                     ip.stack.Push(l);
                     return;
@@ -54,9 +54,7 @@ public class Flow
             }
             else if (b is VarFunction)
             {
-                var c = a;
-                a = b;
-                b = c;
+                (b, a) = (a, b);
             }
             VarFunction f = a as VarFunction;
             if (b is not VarList)
@@ -64,7 +62,7 @@ public class Flow
                 b = Stack.VarToRange(b);
             }
             VarList bl = b as VarList;
-            VarList o = new VarList();
+            VarList o = new();
             for (var i = 0; i < bl.data.Count; i++)
             {
                 ip.Save();
@@ -73,6 +71,7 @@ public class Flow
                 for (int j = 0; j < ip.stack.Count; j++) o.data.Add(ip.stack.ElementAt(j));
                 ip.Load();
             }
+            ip.stack.Push(o);
         });
     }
 }
