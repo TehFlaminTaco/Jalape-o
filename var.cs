@@ -1,3 +1,4 @@
+using System.Text;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -35,7 +36,7 @@ public class VarList : Var
 
     public VarList(string s)
     {
-        foreach (char c in s.ToCharArray())
+        foreach (byte c in Encoding.UTF8.GetBytes(s))
         {
             data.Add(new VarNumber(c));
         }

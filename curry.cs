@@ -4,15 +4,12 @@ public static class Curry
 {
     public static void Expect(Interpreter ip, int count, Action<Interpreter> resolve)
     {
-        Console.WriteLine($" : {count}");
         int initialCount = count;
         Stack<Var> q = new();
         Action<Interpreter> finish = ip =>
         {
-            Console.WriteLine($" v {ip.stack.Count}");
-            Console.WriteLine($" < {initialCount} {count} {q.Count}");
-            while (q.Count > 0) ip.stack.Push(q.Pop());
-            Console.WriteLine($" ^ {ip.stack.Count}");
+            Stack<Var> Q = new(q);
+            while (Q.Count > 0) ip.stack.Push(Q.Pop());
             if (ip.stack.Count < initialCount) throw new Exception($"Failed curry? wanted {initialCount} got {ip.stack.Count}");
             resolve(ip);
         };

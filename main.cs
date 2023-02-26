@@ -4,20 +4,17 @@ class Program
 {
     public static void Main(string[] args)
     {
+        Strings.ParseDictionary();
         //new Constants();
         Console.WriteLine("--Instructions--");
         Instruction.DoRegistrations();
         var interp = new Interpreter();
         interp.byteCode = Interpreter.Assemble(@"
-; + '0'
-    push 48
-    add
-
 ; 0-9
     ten
     range
 
-map
+join ; Implicitly join by ,
 
             ");
         Console.WriteLine("--Assembled--");
