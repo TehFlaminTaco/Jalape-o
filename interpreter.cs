@@ -68,7 +68,7 @@ public class Interpreter
             throw new Exception($"No method for code: {next}");
         }
         int count = attr.byteCount - 1;
-        if (count == 0 && !string.IsNullOrWhiteSpace(attr.terminator))
+        if (!string.IsNullOrWhiteSpace(attr.terminator))
         {
             byte terminator = Instruction.Names[attr.terminator.ToLower()];
             int start = ip;
@@ -83,6 +83,19 @@ public class Interpreter
             else
             {
                 while (code[ip++] != terminator) count++;
+            }
+            ip = start;
+        }
+        else
+        {
+            int start = ip;
+            if (attr.takeFunctions)
+            {
+                for (int i = 0; i < attr.byteCount; i++)
+                {
+                    TakeFunction(code, ref ip);
+                }
+                count = ip - start;
             }
             ip = start;
         }

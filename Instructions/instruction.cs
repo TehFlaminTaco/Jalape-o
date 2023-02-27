@@ -16,6 +16,16 @@ public class RegisterAttribute : System.Attribute
     }
 }
 
+[System.AttributeUsage(System.AttributeTargets.Method)]
+public class AliasAttribute : System.Attribute
+{
+    public string name;
+    public AliasAttribute(string name)
+    {
+        this.name = name;
+    }
+}
+
 public class Instruction
 {
     public static (MethodInfo, RegisterAttribute)[] ByCode = new (MethodInfo, RegisterAttribute)[256];
@@ -27,7 +37,7 @@ public class Instruction
         var registrations = System.Reflection.Assembly
             .GetExecutingAssembly().GetTypes()
             .SelectMany(c => c.GetMethods())
-            .Select(c => (c, c.GetCustomAttributes(typeof(RegisterAttribute), false).OfType<RegisterAttribute>().FirstOrDefault()))
+            .Select(c => (c, c.GetCustomAttributes<RegisterAttribute>(false).FirstOrDefault()))
             .Where(c => c.Item2 is not null);
         if (registrations.Count() == 0)
         {
@@ -35,8 +45,14 @@ public class Instruction
         }
         foreach (var (method, attr) in registrations)
         {
+            string name = attr.name;
             Names[attr.name.ToLower()] = i;
-            Console.WriteLine($"{attr.name}: {i}");
+            foreach (var a in method.GetCustomAttributes<AliasAttribute>(false))
+            {
+                name += "/" + a.name;
+                Names[a.name.ToLower()] = i;
+            }
+            Console.WriteLine($"{name}:{new String(' ', 24 - name.Length)}{BitConverter.ToString(new byte[] { i })}");
             ByCode[i++] = (method, attr);
         }
     }

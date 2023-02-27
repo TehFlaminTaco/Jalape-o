@@ -12,66 +12,34 @@ public class Flow
         List<VarFunction> functions = new();
         var i = 0;
         while (i < data.Length) functions.Add(Interpreter.TakeFunction(data, ref i));
-        ip.Execute(functions);
+        ip.stack.Push(new VarFunction(ip => ip.Execute(functions)));
+    }
+    [Register("asfunc", byteCount = 1, takeFunctions = true)]
+    public static void AsFunc(Interpreter ip, byte[] data)
+    {
+        var i = 0;
+        ip.stack.Push(Interpreter.TakeFunction(data, ref i));
+    }
+    [Register("aspair", byteCount = 2, takeFunctions = true)]
+    public static void AsPair(Interpreter ip, byte[] data)
+    {
+        List<VarFunction> functions = new();
+        var i = 0;
+        while (i < data.Length) functions.Add(Interpreter.TakeFunction(data, ref i));
+        ip.stack.Push(new VarFunction(ip => ip.Execute(functions)));
     }
 
     [Register("call")]
-    public static void Func(Interpreter ip)
+    public static void Call(Interpreter ip)
     {
-        if (ip.stack.Count == 0) return;
-        if (ip.stack.Peek() is not VarFunction) return;
-        (ip.stack.Pop() as VarFunction).Call(ip);
-    }
-
-    [Register("map")]
-    public static void Map(Interpreter ip)
-    {
-        Curry.ExpectFunctions(ip, 2, ip =>
+        Var l = null;
+        Stack<Var> q = new();
+        while (ip.stack.Count > 0 && (l = ip.stack.Pop()) is not VarFunction)
         {
-            Var b = ip.stack.Pop();
-            Var a = ip.stack.Pop();
-            if (b is not VarFunction && a is not VarFunction)
-            {
-                if (b is VarList vl)
-                {
-                    VarList l = new();
-                    for (var i = 0; i < vl.data.Count; i++) l.data.Add(a);
-                    ip.stack.Push(l);
-                    return;
-                }
-                else
-                {
-                    if (a is not VarList)
-                    {
-                        a = Stack.VarToRange(a);
-                    }
-                    VarList al = a as VarList;
-                    VarList l = new();
-                    for (var i = 0; i < al.data.Count; i++) l.data.Add(b);
-                    ip.stack.Push(l);
-                    return;
-                }
-            }
-            else if (b is VarFunction)
-            {
-                (b, a) = (a, b);
-            }
-            VarFunction f = a as VarFunction;
-            if (b is not VarList)
-            {
-                b = Stack.VarToRange(b);
-            }
-            VarList bl = b as VarList;
-            VarList o = new();
-            for (var i = 0; i < bl.data.Count; i++)
-            {
-                ip.Save();
-                ip.stack.Push(bl.data[i]);
-                f.Call(ip);
-                for (int j = 0; j < ip.stack.Count; j++) o.data.Add(ip.stack.ElementAt(j));
-                ip.Load();
-            }
-            ip.stack.Push(o);
-        });
+            q.Push(l);
+        }
+        while (q.Count > 0) ip.stack.Push(q.Pop());
+        if (l is VarFunction F)
+            F.Call(ip);
     }
 }
