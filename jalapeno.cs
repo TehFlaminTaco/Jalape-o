@@ -3,8 +3,9 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 
-class Program
+class Jalapeno
 {
+    public static bool debugPrint = false;
     public static void Main(string[] args)
     {
         List<string> textArgs = new();
@@ -18,10 +19,11 @@ class Program
             }
         }
         if(textArgs.Count == 0){
-            Console.WriteLine(@"Usage: jalapeno <file> [Options...]");
+            Console.WriteLine(@"Usage: jalapeno <file> [Arguments...] [-Options...]");
             return;
         }
 
+        if(flags.ContainsKey('d'))debugPrint = true;
         var targetFile = textArgs[0];
         if(Path.GetExtension(targetFile) == "jna") flags['a'] = "";
         byte[] code = File.ReadAllBytes(targetFile);
@@ -29,27 +31,34 @@ class Program
 
         Strings.ParseDictionary();
         //new Constants();
-        Console.WriteLine("--Instructions--");
+        WriteDebug("--Instructions--");
         Instruction.DoRegistrations();
+        if(flags.ContainsKey('a'))code = Interpreter.Assemble(Encoding.UTF8.GetString(code));
+        if(flags.ContainsKey('o'))File.WriteAllBytes(flags['o'], code);
+        if(flags.ContainsKey('R'))return;
         var interp = new Interpreter
         {
-            byteCode = flags.ContainsKey('a') ? Interpreter.Assemble(Encoding.UTF8.GetString(code)) : code
+            byteCode = code
         };
-        Console.WriteLine("--Assembled--");
-        Console.WriteLine(BitConverter.ToString(interp.byteCode).Replace('-', ' '));
-        Console.WriteLine("--Output--");
+        WriteDebug("--Assembled--");
+        WriteDebug(BitConverter.ToString(interp.byteCode).Replace('-', ' '));
+        WriteDebug("--Output--");
         try { interp.Execute(interp.Parse()); }
         catch (Exception e)
         {
-            Console.WriteLine("-- ERROR --");
-            Console.WriteLine(e);
-            Console.WriteLine("-- STACK --");
-            Console.WriteLine(String.Join(", ", interp.stack));
+            Console.Error.WriteLine("-- ERROR --");
+            Console.Error.WriteLine(e);
+            Console.Error.WriteLine("-- STACK --");
+            Console.Error.WriteLine(String.Join(", ", interp.stack));
             return;
         }
         while (interp.stack.Count > 0)
         {
             Console.WriteLine(interp.stack.Pop());
         }
+    }
+
+    public static void WriteDebug(string format, params object[] values){
+        if(debugPrint)Console.WriteLine(format, values);
     }
 }
