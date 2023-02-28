@@ -1,3 +1,5 @@
-arg0
-contains
+        inc
+        arg0
+    contains
 not
+first

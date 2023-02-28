@@ -3,7 +3,7 @@ using System.Net.NetworkInformation;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class Stack
+public static class JStack
 {
     [Register("swap")]
     public static void Swap(Interpreter ip)
@@ -451,7 +451,7 @@ public static class Stack
 
     [Register("contains"), Alias("any")]
     public static void Contains(Interpreter ip){
-        Curry.ExpectFunctions(ip, 2, ip => {
+        Curry.Expect(ip, 2, ip => {
             Var a = ip.stack.Pop();
             Var b = ip.stack.Pop();
             if(b is VarFunction f){

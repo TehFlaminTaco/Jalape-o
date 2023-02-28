@@ -136,6 +136,7 @@ public class VarList : Var
 
 public class VarFunction : Var
 {
+    public int? expectedArguments = null;
     public Action<Interpreter> action;
     public VarFunction(Action<Interpreter> action)
     {
