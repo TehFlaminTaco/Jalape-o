@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Q/2iuZcPjgVWq+dWr3Wr/DTWOzEL6/UrLAFTgBViv1yyBJgPrT4OjB/8AGp4TGcVmXF3P4tpWPMwoVcubi0byw==",
+  "dgSpecHash": "Qv8cAZQH3QalJy5VV/davYYa8WdzHfb1I3lq8jsZHFGBdU6+fJxy+6wEtVp69s8pZIy+4K/jE5hUKF057WZe4w==",
   "success": true,
-  "projectFilePath": "/home/runner/Jalapeno/main.csproj",
+  "projectFilePath": "/home/runner/Jalapeno/jalapeno.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

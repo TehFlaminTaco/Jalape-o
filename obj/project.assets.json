@@ -13,9 +13,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/runner/Jalapeno/main.csproj",
-      "projectName": "main",
-      "projectPath": "/home/runner/Jalapeno/main.csproj",
+      "projectUniqueName": "/home/runner/Jalapeno/jalapeno.csproj",
+      "projectName": "jalapeno",
+      "projectPath": "/home/runner/Jalapeno/jalapeno.csproj",
       "packagesPath": "/home/runner/.nuget/packages/",
       "outputPath": "/home/runner/Jalapeno/obj/",
       "projectStyle": "PackageReference",

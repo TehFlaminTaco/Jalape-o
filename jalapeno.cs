@@ -11,23 +11,28 @@ class Jalapeno
     {
         List<string> textArgs = new();
         Dictionary<char, string> flags = new();
-        for (var i = 0; i < args.Length; i++){
-            if(args[i].StartsWith('/')){
-                if(args[i].Length == 1)continue;
+        for (var i = 0; i < args.Length; i++)
+        {
+            if (args[i].StartsWith('/'))
+            {
+                if (args[i].Length == 1) continue;
                 flags[args[i][1]] = args[i][2..];
-            }else{
+            }
+            else
+            {
                 textArgs.Add(args[i]);
             }
         }
-        if(textArgs.Count == 0){
+        if (textArgs.Count == 0)
+        {
             Console.WriteLine(@"Usage: jalapeno <file> [Arguments...] [/Options...]");
             return;
         }
 
-        if(flags.ContainsKey('d'))debugPrint = true;
+        if (flags.ContainsKey('d')) debugPrint = true;
         var targetFile = textArgs[0];
-        List<Var> passedArgs = textArgs.Skip(1).Select(c=>Var.FromInput(c)).ToList();
-        if(Path.GetExtension(targetFile) == "jna") flags['a'] = "";
+        List<Var> passedArgs = textArgs.Skip(1).Select(c => Var.FromInput(c)).ToList();
+        if (Path.GetExtension(targetFile) == ".jna") flags['a'] = "";
         byte[] code = File.ReadAllBytes(targetFile);
 
 
@@ -35,9 +40,9 @@ class Jalapeno
         //new Constants();
         WriteDebug("--Instructions--");
         Instruction.DoRegistrations();
-        if(flags.ContainsKey('a'))code = Interpreter.Assemble(Encoding.UTF8.GetString(code));
-        if(flags.ContainsKey('o'))File.WriteAllBytes(flags['o'], code);
-        if(flags.ContainsKey('R'))return;
+        if (flags.ContainsKey('a')) code = Interpreter.Assemble(Encoding.UTF8.GetString(code));
+        if (flags.ContainsKey('o')) File.WriteAllBytes(flags['o'], code);
+        if (flags.ContainsKey('R')) return;
         var interp = new Interpreter
         {
             byteCode = code
@@ -61,7 +66,8 @@ class Jalapeno
         }
     }
 
-    public static void WriteDebug(string format, params object[] values){
-        if(debugPrint)Console.WriteLine(format, values);
+    public static void WriteDebug(string format, params object[] values)
+    {
+        if (debugPrint) Console.WriteLine(format, values);
     }
 }

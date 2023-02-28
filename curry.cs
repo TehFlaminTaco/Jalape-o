@@ -8,8 +8,19 @@ public static class Curry
         Stack<Var> q = new();
         Action<Interpreter> finish = ip =>
         {
-            Stack<Var> Q = new(q);
-            while (Q.Count > 0) ip.stack.Push(Q.Pop());
+            Stack<Var> Q = new(new Stack<Var>(q));
+            while (Q.Count > 0)
+            {
+                Var v = Q.Pop();
+                if (v is VarFunction f)
+                {
+                    f.Call(ip);
+                }
+                else
+                {
+                    ip.stack.Push(v);
+                }
+            }
             if (ip.stack.Count < initialCount) throw new Exception($"Failed curry? wanted {initialCount} got {ip.stack.Count}");
             resolve(ip);
         };
@@ -17,16 +28,19 @@ public static class Curry
         {
             if (ip.stack.Count == 0)
             {
-                ip.stack.Push(new VarFunction(ip => Curry.Expect(ip, count, finish)));
+                ip.stack.Push(new VarFunction(ip => Curry.Expect(ip, count, finish)) { expectedArguments = count });
                 return;
             }
             Var p = ip.stack.Pop();
             if (p is VarFunction f)
             {
                 f.Call(ip);
-                if (ip.stack.Peek() is VarFunction)
+                if (ip.stack.Peek() is VarFunction F)
                 { // Failed curry
-                    ip.stack.Push(new VarFunction(ip => Curry.Expect(ip, count, finish)));
+                    q.Push(ip.stack.Pop());
+                    count--;
+                    count += F.expectedArguments ?? 0;
+                    ip.stack.Push(new VarFunction(ip => Curry.Expect(ip, count, finish)) { expectedArguments = count });
                     return;
                 }
                 else
@@ -52,7 +66,7 @@ public static class Curry
         {
             if (ip.stack.Count == 0)
             {
-                ip.stack.Push(new VarFunction(ip => Curry.ExpectFunctions(ip, count, finish)));
+                ip.stack.Push(new VarFunction(ip => Curry.ExpectFunctions(ip, count, finish)) { expectedArguments = count });
                 return;
             }
             q.Push(ip.stack.Pop());
