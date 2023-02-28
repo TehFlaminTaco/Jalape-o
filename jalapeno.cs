@@ -1,6 +1,7 @@
 using System.Text;
 using System.IO;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 class Jalapeno
@@ -11,7 +12,7 @@ class Jalapeno
         List<string> textArgs = new();
         Dictionary<char, string> flags = new();
         for (var i = 0; i < args.Length; i++){
-            if(args[i].StartsWith('-')){
+            if(args[i].StartsWith('/')){
                 if(args[i].Length == 1)continue;
                 flags[args[i][1]] = args[i][2..];
             }else{
@@ -19,12 +20,13 @@ class Jalapeno
             }
         }
         if(textArgs.Count == 0){
-            Console.WriteLine(@"Usage: jalapeno <file> [Arguments...] [-Options...]");
+            Console.WriteLine(@"Usage: jalapeno <file> [Arguments...] [/Options...]");
             return;
         }
 
         if(flags.ContainsKey('d'))debugPrint = true;
         var targetFile = textArgs[0];
+        List<Var> passedArgs = textArgs.Skip(1).Select(c=>Var.FromInput(c)).ToList();
         if(Path.GetExtension(targetFile) == "jna") flags['a'] = "";
         byte[] code = File.ReadAllBytes(targetFile);
 
@@ -40,6 +42,7 @@ class Jalapeno
         {
             byteCode = code
         };
+        interp.stackStack.Push(new Stack<Var>(passedArgs));
         WriteDebug("--Assembled--");
         WriteDebug(BitConverter.ToString(interp.byteCode).Replace('-', ' '));
         WriteDebug("--Output--");
