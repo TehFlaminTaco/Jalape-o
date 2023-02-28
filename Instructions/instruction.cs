@@ -52,7 +52,7 @@ public class Instruction
                 name += "/" + a.name;
                 Names[a.name.ToLower()] = i;
             }
-            Console.WriteLine($"{name}:{new String(' ', 24 - name.Length)}{BitConverter.ToString(new byte[] { i })}");
+            Jalapeno.WriteDebug($"{name}:{new String(' ', 24 - name.Length)}{BitConverter.ToString(new byte[] { i })}");
             ByCode[i++] = (method, attr);
         }
     }

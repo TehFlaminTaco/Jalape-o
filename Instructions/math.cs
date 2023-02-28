@@ -1,7 +1,9 @@
+using System.Runtime.InteropServices;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
-public class Math
+public class JMath
 {
     public static void DoMath(Interpreter ip, Func<decimal, decimal, decimal> method)
     {
@@ -44,6 +46,54 @@ public class Math
     [Register("ge")] public static void Ge(Interpreter ip) { CompareLike(ip, i => i >= 0); }
     [Register("eq")] public static void Eq(Interpreter ip) { CompareLike(ip, i => i == 0); }
     [Register("ne")] public static void Ne(Interpreter ip) { CompareLike(ip, i => i != 0); }
+    
+    [Register("not")]
+    public static void Not(Interpreter ip) {
+        Curry.Expect(ip, 1, ip => {
+            ip.stack.Push(ip.stack.Pop().Truthy() ? new VarNumber(0) : new VarNumber(1));
+        });
+    }
+    [Register("truthy")]
+    public static void Truthy(Interpreter ip) {
+        Curry.Expect(ip, 1, ip => {
+            ip.stack.Push(ip.stack.Pop().Truthy() ? new VarNumber(1) : new VarNumber(0));
+        });
+    }
+
+    public static Var IncVar(Var v){
+        if(v is VarNumber n){
+            return new VarNumber(n.data + 1);
+        }
+        if(v is VarList l){
+            l.data = l.data.Select(IncVar).ToList();
+        }
+        return v;
+    }
+    public static Var DecVar(Var v)
+    {
+        if (v is VarNumber n)
+        {
+            return new VarNumber(n.data - 1);
+        }
+        if (v is VarList l)
+        {
+            l.data = l.data.Select(DecVar).ToList();
+        }
+        return v;
+    }
+
+    [Register("inc")]
+    public static void Inc(Interpreter ip){
+        Curry.Expect(ip, 1, ip => {
+            ip.stack.Push(IncVar(ip.stack.Pop()));
+        });
+    }
+    [Register("dec")]
+    public static void Dec(Interpreter ip){
+        Curry.Expect(ip, 1, ip => {
+            ip.stack.Push(DecVar(ip.stack.Pop()));
+        });
+    }
 
     public static Var CompareVars(Var a, Var b)
     {

@@ -28,6 +28,14 @@ public class Flow
         while (i < data.Length) functions.Add(Interpreter.TakeFunction(data, ref i));
         ip.stack.Push(new VarFunction(ip => ip.Execute(functions)));
     }
+    [Register("astrio", byteCount = 3, takeFunctions = true)]
+    public static void AsTrio(Interpreter ip, byte[] data)
+    {
+        List<VarFunction> functions = new();
+        var i = 0;
+        while (i < data.Length) functions.Add(Interpreter.TakeFunction(data, ref i));
+        ip.stack.Push(new VarFunction(ip => ip.Execute(functions)));
+    }
 
     [Register("call")]
     public static void Call(Interpreter ip)

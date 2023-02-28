@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -39,6 +40,36 @@ abstract public class Var
 
     public abstract Var Clone();
     public abstract bool Truthy();
+
+    public static Var FromJsonElement(JsonElement e){
+        switch(e.ValueKind){
+            case JsonValueKind.Array: {
+                VarList l = new();
+                for (var i = 0; i < e.GetArrayLength(); i++){
+                    l.data.Add(FromJsonElement(e[i]));
+                }
+                return l;
+            }
+            case JsonValueKind.Number: {
+                return new VarNumber(e.GetDecimal());
+            }
+            case JsonValueKind.String: {
+                return new VarList(e.GetString());
+            }
+            case JsonValueKind.True: {
+                return new VarNumber(1);
+            }
+        }
+        return new VarNumber(0);
+    }
+
+    public static Var FromInput(string s){
+        dynamic v = JsonSerializer.Deserialize<dynamic>(s);
+        if(v is JsonElement e){
+            return FromJsonElement(e);
+        }
+        return new VarNumber(0);
+    }
 }
 
 public class VarNumber : Var
@@ -105,6 +136,7 @@ public class VarList : Var
 
 public class VarFunction : Var
 {
+    public int? expectedArguments = null;
     public Action<Interpreter> action;
     public VarFunction(Action<Interpreter> action)
     {

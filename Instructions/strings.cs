@@ -96,7 +96,7 @@ public static class Strings
                 }
                 else
                 {
-                    a = Stack.VarToRange(a);
+                    a = JStack.VarToRange(a);
                     if (ip.stack.Count > 0) deliminator = ip.stack.Pop();
                     else deliminator = new VarList(",");
                 }
