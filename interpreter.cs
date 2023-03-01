@@ -31,7 +31,37 @@ public class Interpreter
             }
             else
             {
-                byteCode.Add(byte.Parse(m.Groups["number"].Value));
+                var val = byte.Parse(m.Groups["number"].Value);
+                switch (val)
+                {
+                    case 0:
+                        {
+                            byteCode.Add(Instruction.Names["zero"]);
+                            break;
+                        }
+                    case 1:
+                        {
+                            byteCode.Add(Instruction.Names["one"]);
+                            break;
+                        }
+                    case 2:
+                        {
+                            byteCode.Add(Instruction.Names["two"]);
+                            break;
+                        }
+                    case 10:
+                        {
+                            byteCode.Add(Instruction.Names["ten"]);
+                            break;
+                        }
+                    default:
+                        {
+                            byteCode.Add(Instruction.Names["number"]);
+                            byteCode.Add(val);
+                            break;
+                        }
+                }
+                
             }
         }
 

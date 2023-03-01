@@ -375,89 +375,109 @@ public static class JStack
     }
 
     [Register("pullup")]
-    public static void PullUp(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stack.Push(new VarNumber(0));
+    public static void PullUp(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Peek().Pop());
     }
 
     [Register("pushdown")]
-    public static void PushDown(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stackStack.Push(new());
-        if(ip.stack.Count == 0)ip.stack.Push(new VarNumber(0));
+    public static void PushDown(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stackStack.Push(new());
+        if (ip.stack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stackStack.Peek().Push(ip.stack.Pop());
     }
 
     [Register("push")]
-    public static void Push(Interpreter ip){
-        Curry.Expect(ip, 2, ip => {
+    public static void Push(Interpreter ip)
+    {
+        Curry.Expect(ip, 2, ip =>
+        {
             (VarList l, Var v) = ListAndVar(ip);
             l.data.Add(v);
         });
     }
     [Register("enqueue")]
-    public static void Enqueue(Interpreter ip){
-        Curry.Expect(ip, 2, ip => {
+    public static void Enqueue(Interpreter ip)
+    {
+        Curry.Expect(ip, 2, ip =>
+        {
             (VarList l, Var v) = ListAndVar(ip);
             l.data.Insert(0, v);
         });
     }
     [Register("pop")]
-    public static void Pop(Interpreter ip){
-        Curry.Expect(ip, 2, ip => {
+    public static void Pop(Interpreter ip)
+    {
+        Curry.Expect(ip, 2, ip =>
+        {
             Var v = ip.stack.Pop();
-            if(v is VarList l && l.data.Count > 0)
+            if (v is VarList l && l.data.Count > 0)
                 l.data.RemoveAt(l.data.Count - 1);
         });
     }
     [Register("dequeue")]
-    public static void Dequeue(Interpreter ip){
-        Curry.Expect(ip, 2, ip => {
+    public static void Dequeue(Interpreter ip)
+    {
+        Curry.Expect(ip, 2, ip =>
+        {
             Var v = ip.stack.Pop();
-            if(v is VarList l && l.data.Count > 0)
+            if (v is VarList l && l.data.Count > 0)
                 l.data.RemoveAt(0);
         });
     }
 
     [Register("copy0")]
-    public static void Pull0(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stack.Push(new VarNumber(0));
-        ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(0)??new VarNumber(0));
+    public static void Pull0(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
+        ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(0) ?? new VarNumber(0));
     }
     [Register("copy1")]
-    public static void Pull1(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stack.Push(new VarNumber(0));
-        ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(1)??new VarNumber(0));
+    public static void Pull1(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
+        ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(1) ?? new VarNumber(0));
     }
     [Register("copy2")]
-    public static void Pull2(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stack.Push(new VarNumber(0));
-        ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(2)??new VarNumber(0));
+    public static void Pull2(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
+        ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(2) ?? new VarNumber(0));
     }
     [Register("arg0")]
-    public static void Arg0(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stack.Push(new VarNumber(0));
-        ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(0)??new VarNumber(0));
+    public static void Arg0(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
+        ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(0) ?? new VarNumber(0));
     }
     [Register("arg1")]
-    public static void Arg1(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stack.Push(new VarNumber(0));
-        ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(1)??new VarNumber(0));
+    public static void Arg1(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
+        ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(1) ?? new VarNumber(0));
     }
     [Register("arg2")]
-    public static void Arg2(Interpreter ip){
-        if(ip.stackStack.Count == 0)ip.stack.Push(new VarNumber(0));
-        ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(2)??new VarNumber(0));
+    public static void Arg2(Interpreter ip)
+    {
+        if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
+        ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(2) ?? new VarNumber(0));
     }
 
     [Register("contains"), Alias("any")]
-    public static void Contains(Interpreter ip){
-        Curry.Expect(ip, 2, ip => {
+    public static void Contains(Interpreter ip)
+    {
+        Curry.Expect(ip, 2, ip =>
+        {
             Var a = ip.stack.Pop();
             Var b = ip.stack.Pop();
-            if(b is VarFunction f){
-                if(a is not VarList)a = VarToRange(a);
+            if (b is VarFunction f)
+            {
+                if (a is not VarList) a = VarToRange(a);
                 VarList al = a as VarList;
-                for (var i = 0; i < al.data.Count; i++){
+                for (var i = 0; i < al.data.Count; i++)
+                {
                     if (f.CallSnatchDefault(ip, new VarNumber(0), 1, al.data[i])[0].Truthy())
                     {
                         ip.stack.Push(new VarNumber(1));
@@ -467,14 +487,18 @@ public static class JStack
                 ip.stack.Push(new VarNumber(0));
                 return;
             }
-            if(a is VarList || b is VarList){
-                if(a is not VarList){
+            if (a is VarList || b is VarList)
+            {
+                if (a is not VarList)
+                {
                     (a, b) = (b, a);
                 }
                 VarList haystack = a as VarList;
                 Var needle = b;
-                for (var i = 0; i < haystack.data.Count; i++){
-                    if(JMath.CompareVars(haystack.data[i], needle) is VarNumber N && N.data == 0){
+                for (var i = 0; i < haystack.data.Count; i++)
+                {
+                    if (JMath.CompareVars(haystack.data[i], needle) is VarNumber N && N.data == 0)
+                    {
                         ip.stack.Push(new VarNumber(1));
                         return;
                     }
@@ -482,7 +506,8 @@ public static class JStack
                 ip.stack.Push(new VarNumber(0));
                 return;
             }
-            if(JMath.CompareVars(a, b) is VarNumber n && n.data == 0){
+            if (JMath.CompareVars(a, b) is VarNumber n && n.data == 0)
+            {
                 ip.stack.Push(new VarNumber(1));
                 return;
             }
@@ -491,38 +516,81 @@ public static class JStack
     }
 
     [Register("first")]
-    public static void First(Interpreter ip){
-        Curry.ExpectFunctions(ip, 1, ip => {
+    public static void First(Interpreter ip)
+    {
+        Curry.ExpectFunctions(ip, 1, ip =>
+        {
             Var a = ip.stack.Pop();
-            if(ip.stack.Count == 0){ // In positive integers
+            if (ip.stack.Count == 0)
+            { // In positive integers
                 VarFunction f;
-                if(a is VarFunction F){
+                if (a is VarFunction F)
+                {
                     f = F;
-                }else{
-                    f = new VarFunction(j => {
+                }
+                else
+                {
+                    f = new VarFunction(j =>
+                    {
                         Var k = ip.stack.Pop();
-                        if(JMath.CompareVars(k, a) is VarNumber n && n.data == 0)ip.stack.Push(new VarNumber(1));
+                        if (JMath.CompareVars(k, a) is VarNumber n && n.data == 0) ip.stack.Push(new VarNumber(1));
                         else ip.stack.Push(new VarNumber(0));
                     });
                 }
-                for (int i = 0; true; i++){
+                for (int i = 0; true; i++)
+                {
                     if (f.CallSnatchDefault(ip, new VarNumber(0), 1, new VarNumber(i))[0].Truthy())
                     {
                         ip.stack.Push(new VarNumber(i));
                         return;
                     }
                 }
-            }else{ // In a listlike
+            }
+            else
+            { // In a listlike
                 ip.stack.Push(a);
                 (VarList l, VarFunction f) = ListAndMethod(ip);
-                for (var i = 0; i < l.data.Count; i++){
-                    if(f.CallSnatchDefault(ip, new VarNumber(0), 1, l.data[i])[0].Truthy())
+                for (var i = 0; i < l.data.Count; i++)
+                {
+                    if (f.CallSnatchDefault(ip, new VarNumber(0), 1, l.data[i])[0].Truthy())
                     {
                         ip.stack.Push(l.data[i]);
                         return;
                     }
                 }
             }
+        });
+    }
+
+    public static VarNumber VarAverage(Var v)
+    {
+        if (v is VarNumber n)
+        {
+            return new VarNumber(n.data / 2);
+        }
+        if (v is VarList l)
+        {
+            decimal sum = 0;
+            for (var i = 0; i < l.data.Count; i++)
+            {
+                Var vi = l.data[i];
+                if (vi is not VarNumber)
+                {
+                    vi = VarAverage(vi);
+                }
+                sum += (vi as VarNumber).data;
+            }
+            return new VarNumber(sum / l.data.Count);
+        }
+        return new VarNumber(0);
+    }
+
+    [Register("average"), Alias("mean")]
+    public static void Average(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
+            ip.stack.Push(VarAverage(ip.stack.Pop()));
         });
     }
 }

@@ -128,4 +128,17 @@ public static class Strings
             ip.stack.Push(o);
         });
     }
+
+    [Register("print")]
+    public static void Print(Interpreter ip){
+        Curry.Expect(ip, 1, ip => {
+            Console.WriteLine(ip.stack.Pop()); 
+        });
+    }
+    [Register("write")]
+    public static void Write(Interpreter ip){
+        Curry.Expect(ip, 1, ip => {
+            Console.Write(ip.stack.Pop()); 
+        });
+    }
 }

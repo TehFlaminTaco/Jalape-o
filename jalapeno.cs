@@ -48,7 +48,7 @@ class Jalapeno
             byteCode = code
         };
         interp.stackStack.Push(new Stack<Var>(passedArgs));
-        WriteDebug("--Assembled--");
+        WriteDebug($"--Assembled (${interp.byteCode.Length} bytes)--");
         WriteDebug(BitConverter.ToString(interp.byteCode).Replace('-', ' '));
         WriteDebug("--Output--");
         try { interp.Execute(interp.Parse()); }
@@ -60,9 +60,16 @@ class Jalapeno
             Console.Error.WriteLine(String.Join(", ", interp.stack));
             return;
         }
+        if (interp.stack.Count == 1 && interp.stack.Peek() is VarFunction f)
+        {
+            interp.Save();
+            interp.stack = new(passedArgs);
+            f.Call(interp);
+        }
         while (interp.stack.Count > 0)
         {
-            Console.WriteLine(interp.stack.Pop());
+            if (interp.stack.Count == 1) Console.Write(interp.stack.Pop());
+            else Console.WriteLine(interp.stack.Pop());
         }
     }
 

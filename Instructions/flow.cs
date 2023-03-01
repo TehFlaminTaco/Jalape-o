@@ -50,4 +50,21 @@ public class Flow
         if (l is VarFunction F)
             F.Call(ip);
     }
+
+    [Register("while")]
+    public static void While(Interpreter ip)
+    {
+        Curry.ExpectFunctions(ip, 1, ip =>
+        {
+            Var f = ip.stack.Pop();
+            if (f is not VarFunction) while (f.Truthy()) { };
+            var F = f as VarFunction;
+            while (true)
+            {
+                F.Call(ip);
+                if (ip.stack.Count == 0) return;
+                if (!ip.stack.Pop().Truthy()) return;
+            }
+        });
+    }
 }

@@ -1,10 +1,17 @@
 public class Constants
 {
-    [Register("push", byteCount = 2)]
+    [Register("number", byteCount = 2)]
     public static void PushNumber(Interpreter ip, byte[] data)
     {
         if (data.Length == 0) ip.stack.Push(new VarNumber(0));
         else ip.stack.Push(new VarNumber(data[0]));
+    }
+
+    [Register("char", byteCount = 2)]
+    public static void PushChar(Interpreter ip, byte[] data)
+    {
+        if (data.Length == 0) ip.stack.Push(new VarList("\0"));
+        else ip.stack.Push(new VarList(System.Text.Encoding.UTF8.GetString(data)));
     }
 
     [Register("zero")]
