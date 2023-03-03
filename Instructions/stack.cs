@@ -593,4 +593,32 @@ public static class JStack
             ip.stack.Push(VarAverage(ip.stack.Pop()));
         });
     }
+
+    public static VarNumber VarSum(Var v)
+    {
+        if (v is VarList l)
+        {
+            decimal sum = 0;
+            for (var i = 0; i < l.data.Count; i++)
+            {
+                if (l.data[i] is VarNumber n) sum += n.data;
+                else sum += VarSum(l.data[i]).data;
+            }
+            return new VarNumber(sum);
+        }
+        if (v is VarNumber)
+        {
+            return VarSum(Strings.VarToDigits(v));
+        }
+        return VarSum(VarToRange(v));
+    }
+
+    [Register("sum")]
+    public static void Sum(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
+            ip.stack.Push(VarSum(ip.stack.Pop()));
+        });
+    }
 }

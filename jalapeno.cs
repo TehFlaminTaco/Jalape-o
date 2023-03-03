@@ -48,7 +48,7 @@ class Jalapeno
             byteCode = code
         };
         interp.stackStack.Push(new Stack<Var>(passedArgs));
-        WriteDebug($"--Assembled (${interp.byteCode.Length} bytes)--");
+        WriteDebug($"--Assembled ({interp.byteCode.Length} bytes)--");
         WriteDebug(BitConverter.ToString(interp.byteCode).Replace('-', ' '));
         WriteDebug("--Output--");
         try { interp.Execute(interp.Parse()); }

@@ -16,6 +16,13 @@ public class Interpreter
   (?:-?0b[01]+)|
   (?:-?0o[0-7]+)|
   (?:-?\d+(?:e\d+)?)
+)|(?<string>
+  (?<qoute>[\x22'])
+  (?<body>(?:
+    \\[\u0000-\uFFFF]|
+      [\u0000-\uFFFF]
+  )*?)
+  \<qoute>
 )|(?<instruction>
   \w+
 )", RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
@@ -29,7 +36,7 @@ public class Interpreter
             {
                 byteCode.Add(Instruction.Names[m.Groups["instruction"].Value.ToLower()]);
             }
-            else
+            else if (m.Groups.ContainsKey("number") && !string.IsNullOrWhiteSpace(m.Groups["number"].Value))
             {
                 var val = byte.Parse(m.Groups["number"].Value);
                 switch (val)
@@ -61,7 +68,9 @@ public class Interpreter
                             break;
                         }
                 }
-                
+
+            }else{
+                // Encode String!
             }
         }
 

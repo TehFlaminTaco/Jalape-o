@@ -1,4 +1,4 @@
-run = 'dotnet run test.jna /d "[-5, -4, -3, -2, -1, 0, 1, 2, 3, 5, 7, 10]"'
+run = 'dotnet run test.jna /d "4"'
 entrypoint = "jalapeno.cs"
 
 hidden = ["bin", "obj"]

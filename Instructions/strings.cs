@@ -8,12 +8,14 @@ using System.IO;
 public static class Strings
 {
     public static string[] Dict = null;
+    public static string[] DictSorted = null;
     public static void ParseDictionary()
     {
         var assembly = Assembly.GetExecutingAssembly();
         var resourceName = assembly.GetManifestResourceNames().First(c => c.EndsWith("dictionary.txt"));
         var dictStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
         Dict = new StreamReader(dictStream).ReadToEnd().Split('\n');
+        DictSorted = Dict.OrderByDescending(c => c.Length).ToArray();
     }
 
     [Register("tostring")]
@@ -24,6 +26,77 @@ public static class Strings
             ip.stack.Push(new VarList(ip.stack.Pop().ToString()));
         });
     }
+
+    private const int START_WITH_CAPITAL = 0b100;
+    private const int END_WITH_CAPITAL = 0b010;
+    private const int FINISH_DICTIONARY = 0b001;
+    public static string Decompress(string s, bool dictionaryMode = false)
+    {
+        int ptr = 0;
+        byte[] c = ShortUF8.ToShortBytes(s);
+        List<byte> o = new();
+        while (ptr < c.Length)
+        {
+            if (dictionaryMode)
+            {
+                int n = c[ptr++];
+                int flags = n >> 5;
+                int byteCount = (n >> 2) & 0b11;
+                n &= 0b11;
+                for (int i = 0; i < byteCount && ptr < c.Length; i++)
+                {
+                    n <<= 8;
+                    n += c[ptr++];
+                }
+                int dictIndex = n >> 6;
+                if (dictIndex >= Dict.Length)
+                {
+                    continue;
+                }
+                string entry = Dict[dictIndex].ToLower();
+                if ((flags & START_WITH_CAPITAL) > 0)
+                {
+                    entry = entry[0..1].ToUpper() + entry[1..];
+                }
+                if ((flags & END_WITH_CAPITAL) > 0)
+                {
+                    entry = entry[0..1] + entry[1..].ToUpper();
+                }
+                s += entry;
+                if ((flags & FINISH_DICTIONARY) > 0)
+                {
+                    dictionaryMode = false;
+                }
+            }
+            else
+            {
+                int len = c[ptr++];
+                if (len > 127)
+                {
+                    len = len - 256;
+                }
+                if (len == 0)
+                {
+                    dictionaryMode = true;
+                }
+                else if (len > 0)
+                {
+                    byte b = c[ptr++];
+                    for (int i = 0; i < len; i++)
+                    {
+                        o.Add(b);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < -len && ptr < c.Length; i++)
+                        o.Add(c[ptr++]);
+                }
+            }
+        }
+        return ShortUF8.ToRegularString(o.ToArray());
+    }
+    
 
 
     public static VarList VarToDigits(Var v, int bse = 10)
@@ -130,15 +203,19 @@ public static class Strings
     }
 
     [Register("print")]
-    public static void Print(Interpreter ip){
-        Curry.Expect(ip, 1, ip => {
-            Console.WriteLine(ip.stack.Pop()); 
+    public static void Print(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
+            Console.WriteLine(ip.stack.Pop());
         });
     }
     [Register("write")]
-    public static void Write(Interpreter ip){
-        Curry.Expect(ip, 1, ip => {
-            Console.Write(ip.stack.Pop()); 
+    public static void Write(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
+            Console.Write(ip.stack.Pop());
         });
     }
 }
