@@ -27,9 +27,10 @@ public static class Strings
         });
     }
 
-    private const int START_WITH_CAPITAL = 0b100;
-    private const int END_WITH_CAPITAL = 0b010;
-    private const int FINISH_DICTIONARY = 0b001;
+    private const int START_WITH_CAPITAL = 0b1000;
+    private const int END_WITH_CAPITAL = 0b0100;
+    private const int FINISH_DICTIONARY = 0b0010;
+    private const int CONTINUE_DICTIONARY = 0b0001;
     public static string Decompress(string s, bool dictionaryMode = false)
     {
         int ptr = 0;
@@ -40,7 +41,7 @@ public static class Strings
             if (dictionaryMode)
             {
                 int n = c[ptr++];
-                int flags = n >> 5;
+                int flags = n >> 4;
                 int byteCount = (n >> 2) & 0b11;
                 n &= 0b11;
                 for (int i = 0; i < byteCount && ptr < c.Length; i++)
@@ -67,19 +68,26 @@ public static class Strings
                 {
                     dictionaryMode = false;
                 }
+                if ((flags & CONTINUE_DICTIONARY) == 0)
+                {
+                    break;
+                }
             }
             else
             {
-                int len = c[ptr++];
-                if (len > 127)
+                int n = c[ptr++];
+                int CONTINUE = n >> 7;
+                int RUNLENGTH = (n >> 6) & 0b1;
+                int len = n & 0b111111;
+                if (CONTINUE == 0)
                 {
-                    len = len - 256;
+                    break;
                 }
                 if (len == 0)
                 {
                     dictionaryMode = true;
                 }
-                else if (len > 0)
+                else if (RUNLENGTH == 0)
                 {
                     byte b = c[ptr++];
                     for (int i = 0; i < len; i++)
@@ -89,15 +97,23 @@ public static class Strings
                 }
                 else
                 {
-                    for (int i = 0; i < -len && ptr < c.Length; i++)
+                    for (int i = 0; i < len && ptr < c.Length; i++)
                         o.Add(c[ptr++]);
                 }
             }
         }
         return ShortUF8.ToRegularString(o.ToArray());
     }
-    
 
+    public static byte[] Compress(string s)
+    {
+        List<byte> b = new();
+        if (s.Length == 1)
+        {
+            return new byte[] { Instruction.Names["char"], ShortUF8.ToShortBytes(s)[0] };
+        }
+        return b.ToArray();
+    }
 
     public static VarList VarToDigits(Var v, int bse = 10)
     {
