@@ -28,43 +28,50 @@ public class JMath
             else ip.stack.Push(new VarNumber(method(0) ? 1 : 0));
         });
     }
-    [Register("add")] public static void Add(Interpreter ip) { DoMath(ip, (a, b) => a + b); }
-    [Register("sub")] public static void Sub(Interpreter ip) { DoMath(ip, (a, b) => a - b); }
-    [Register("mul")] public static void Mul(Interpreter ip) { DoMath(ip, (a, b) => a * b); }
-    [Register("div")] public static void Div(Interpreter ip) { DoMath(ip, (a, b) => a / b); }
-    [Register("intdiv")] public static void IntDiv(Interpreter ip) { DoMath(ip, (a, b) => Decimal.Floor(a / b)); }
-    [Register("mod")] public static void Mod(Interpreter ip) { DoMath(ip, (a, b) => a % b); }
-    [Register("pow")] public static void Pow(Interpreter ip) { DoMath(ip, (a, b) => (decimal)System.Math.Pow((double)a, (double)b)); }
-    [Register("band")] public static void BAnd(Interpreter ip) { DoMath(ip, (a, b) => (int)a & (int)b); }
-    [Register("bor")] public static void BOr(Interpreter ip) { DoMath(ip, (a, b) => (int)a | (int)b); }
-    [Register("bxor")] public static void BXor(Interpreter ip) { DoMath(ip, (a, b) => (int)a ^ (int)b); }
-    [Register("bshl")] public static void BShl(Interpreter ip) { DoMath(ip, (a, b) => (int)a << (int)b); }
-    [Register("bshr")] public static void BShr(Interpreter ip) { DoMath(ip, (a, b) => (int)a >> (int)b); }
-    [Register("lt")] public static void Lt(Interpreter ip) { CompareLike(ip, i => i < 0); }
-    [Register("le")] public static void Le(Interpreter ip) { CompareLike(ip, i => i <= 0); }
-    [Register("gt")] public static void Gt(Interpreter ip) { CompareLike(ip, i => i > 0); }
-    [Register("ge")] public static void Ge(Interpreter ip) { CompareLike(ip, i => i >= 0); }
-    [Register("eq")] public static void Eq(Interpreter ip) { CompareLike(ip, i => i == 0); }
-    [Register("ne")] public static void Ne(Interpreter ip) { CompareLike(ip, i => i != 0); }
-    
-    [Register("not")]
-    public static void Not(Interpreter ip) {
-        Curry.Expect(ip, 1, ip => {
+    [Register("add", 0x20), Alias("+")] public static void Add(Interpreter ip) { DoMath(ip, (a, b) => a + b); }
+    [Register("sub", 0x21), Alias("-")] public static void Sub(Interpreter ip) { DoMath(ip, (a, b) => a - b); }
+    [Register("mul", 0x22), Alias("*")] public static void Mul(Interpreter ip) { DoMath(ip, (a, b) => a * b); }
+    [Register("div", 0x23), Alias("/")] public static void Div(Interpreter ip) { DoMath(ip, (a, b) => a / b); }
+    [Register("intdiv", 0x24)] public static void IntDiv(Interpreter ip) { DoMath(ip, (a, b) => Decimal.Floor(a / b)); }
+    [Register("mod", 0x25), Alias("%")] public static void Mod(Interpreter ip) { DoMath(ip, (a, b) => a % b); }
+    [Register("pow", 0x26), Alias("^")] public static void Pow(Interpreter ip) { DoMath(ip, (a, b) => (decimal)System.Math.Pow((double)a, (double)b)); }
+    [Register("band", 0x27), Alias("&")] public static void BAnd(Interpreter ip) { DoMath(ip, (a, b) => (int)a & (int)b); }
+    [Register("bor", 0x28), Alias("|")] public static void BOr(Interpreter ip) { DoMath(ip, (a, b) => (int)a | (int)b); }
+    [Register("bxor", 0x29), Alias("~")] public static void BXor(Interpreter ip) { DoMath(ip, (a, b) => (int)a ^ (int)b); }
+    [Register("bshl", 0x2A)] public static void BShl(Interpreter ip) { DoMath(ip, (a, b) => (int)a << (int)b); }
+    [Register("bshr", 0x2B)] public static void BShr(Interpreter ip) { DoMath(ip, (a, b) => (int)a >> (int)b); }
+    [Register("lt", 0x2C)] public static void Lt(Interpreter ip) { CompareLike(ip, i => i < 0); }
+    [Register("le", 0x2D)] public static void Le(Interpreter ip) { CompareLike(ip, i => i <= 0); }
+    [Register("gt", 0x2E)] public static void Gt(Interpreter ip) { CompareLike(ip, i => i > 0); }
+    [Register("ge", 0x2F)] public static void Ge(Interpreter ip) { CompareLike(ip, i => i >= 0); }
+    [Register("eq", 0x30)] public static void Eq(Interpreter ip) { CompareLike(ip, i => i == 0); }
+    [Register("ne", 0x31)] public static void Ne(Interpreter ip) { CompareLike(ip, i => i != 0); }
+
+    [Register("not", 0x32)]
+    public static void Not(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
             ip.stack.Push(ip.stack.Pop().Truthy() ? new VarNumber(0) : new VarNumber(1));
         });
     }
-    [Register("truthy")]
-    public static void Truthy(Interpreter ip) {
-        Curry.Expect(ip, 1, ip => {
+    [Register("truthy", 0x33)]
+    public static void Truthy(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
             ip.stack.Push(ip.stack.Pop().Truthy() ? new VarNumber(1) : new VarNumber(0));
         });
     }
 
-    public static Var IncVar(Var v){
-        if(v is VarNumber n){
+    public static Var IncVar(Var v)
+    {
+        if (v is VarNumber n)
+        {
             return new VarNumber(n.data + 1);
         }
-        if(v is VarList l){
+        if (v is VarList l)
+        {
             l.data = l.data.Select(IncVar).ToList();
         }
         return v;
@@ -82,15 +89,19 @@ public class JMath
         return v;
     }
 
-    [Register("inc")]
-    public static void Inc(Interpreter ip){
-        Curry.Expect(ip, 1, ip => {
+    [Register("inc", 0x34)]
+    public static void Inc(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
             ip.stack.Push(IncVar(ip.stack.Pop()));
         });
     }
-    [Register("dec")]
-    public static void Dec(Interpreter ip){
-        Curry.Expect(ip, 1, ip => {
+    [Register("dec", 0x35)]
+    public static void Dec(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
             ip.stack.Push(DecVar(ip.stack.Pop()));
         });
     }
@@ -137,7 +148,7 @@ public class JMath
         }
         return new VarNumber(0m);
     }
-    [Register("compare")]
+    [Register("compare", 0x36)]
     public static void Compare(Interpreter ip)
     {
         Curry.Expect(ip, 2, ip =>
@@ -147,6 +158,21 @@ public class JMath
             ip.stack.Push(CompareVars(a, b));
         });
     }
+
+    /*public static Var VarLerp(Var a, Var b, decimal t)
+    {
+        VarNumber an = a as VarNumber;
+        VarNumber bn = b as VarNumber;
+        VarList al = a as VarList;
+        VarList bl = b as VarList;
+        if (a is VarNumber && b is VarNumber)
+        {
+            return new VarNumber((bn.data - an.data) * t + an.data);
+        }
+        if(a is VarList && b is VarList){
+            
+        }
+    }*/
 }
 
 public class VarComparer : IComparer<Var>

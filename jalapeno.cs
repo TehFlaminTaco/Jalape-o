@@ -7,6 +7,7 @@ using System.Collections.Generic;
 class Jalapeno
 {
     public static bool debugPrint = false;
+	public static bool golfPrint = false;
     public static void Main(string[] args)
     {
         List<string> textArgs = new();
@@ -30,13 +31,12 @@ class Jalapeno
         }
 
         if (flags.ContainsKey('d')) debugPrint = true;
+		if (flags.ContainsKey('g')) golfPrint = true;
         var targetFile = textArgs[0];
         List<Var> passedArgs = textArgs.Skip(1).Select(c => Var.FromInput(c)).ToList();
         if (Path.GetExtension(targetFile) == ".jna") flags['a'] = "";
         byte[] code = File.ReadAllBytes(targetFile);
-
-
-        Strings.ParseDictionary();
+		byte[] raw = code;
         //new Constants();
         WriteDebug("--Instructions--");
         Instruction.DoRegistrations();
@@ -48,9 +48,15 @@ class Jalapeno
             byteCode = code
         };
         interp.stackStack.Push(new Stack<Var>(passedArgs));
+		WriteGolf($"[Jalapeño](https://github.com/TehFlaminTaco/Jalape-o), {interp.byteCode.Length} bytes");
         WriteDebug($"--Assembled ({interp.byteCode.Length} bytes)--");
-        WriteDebug(BitConverter.ToString(interp.byteCode).Replace('-', ' '));
+		var byteString = BitConverter.ToString(interp.byteCode).Replace('-', ' ');
+		WriteGolf($"    {byteString}\n");
+		WriteGolf($"## Assembly");
+		WriteGolf("    " + Encoding.UTF8.GetString(raw).Replace("\n", "\n    ") + "\n");
+        WriteDebug(byteString);
         WriteDebug("--Output--");
+		WriteGolfNoline($"## Output\n    ");
         try { interp.Execute(interp.Parse()); }
         catch (Exception e)
         {
@@ -77,4 +83,11 @@ class Jalapeno
     {
         if (debugPrint) Console.WriteLine(format, values);
     }
+
+	public static void WriteGolf(string format, params object[] values){
+		if (golfPrint) Console.WriteLine(format, values);
+	}
+	public static void WriteGolfNoline(string format, params object[] values){
+		if (golfPrint) Console.Write(format, values);
+	}
 }

@@ -5,7 +5,7 @@ using System.Linq;
 
 public static class JStack
 {
-    [Register("swap")]
+    [Register("swap", 0x40)]
     public static void Swap(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 2, ip =>
@@ -17,7 +17,7 @@ public static class JStack
         });
     }
 
-    [Register("flip")]
+    [Register("flip", 0x41)]
     public static void Flip(Interpreter ip)
     {
         Stack<Var> n = new();
@@ -25,7 +25,7 @@ public static class JStack
         ip.stack = n;
     }
 
-    [Register("copy")]
+    [Register("copy", 0x42)]
     public static void Copy(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 1, ip =>
@@ -36,7 +36,7 @@ public static class JStack
         });
     }
 
-    [Register("discard")]
+    [Register("discard", 0x43)]
     public static void Discard(Interpreter ip)
     {
         if (ip.stack.Count > 0) ip.stack.Pop();
@@ -62,7 +62,7 @@ public static class JStack
         }
         return new VarList();
     }
-    [Register("range")]
+    [Register("range", 0x44)]
     public static void Range(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -72,17 +72,17 @@ public static class JStack
         });
     }
 
-    [Register("save")]
+    [Register("save", 0x45)]
     public static void Save(Interpreter ip)
     {
         ip.Save();
     }
-    [Register("load")]
+    [Register("load", 0x46)]
     public static void Load(Interpreter ip)
     {
         ip.Load();
     }
-    [Register("loadunder")]
+    [Register("loadunder", 0x47)]
     public static void LoadUnder(Interpreter ip)
     {
         Stack<Var> s = ip.stack;
@@ -92,7 +92,7 @@ public static class JStack
             ip.stack.Push(s.ElementAt(i));
         }
     }
-    [Register("makelist"), Alias("pack")]
+    [Register("makelist", 0x48), Alias("pack")]
     public static void MakeList(Interpreter ip)
     {
         Stack<Var> s = ip.stack;
@@ -104,7 +104,7 @@ public static class JStack
         }
         ip.stack.Push(o);
     }
-    [Register("unpack")]
+    [Register("unpack", 0x49)]
     public static void Unpack(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -116,7 +116,7 @@ public static class JStack
         });
     }
 
-    private static (VarList, VarFunction) ListAndMethod(Interpreter ip)
+    private static (VarList, VarFunction) ListAndMethod(Interpreter ip, bool discarding = true)
     {
         Var b = ip.stack.Pop();
         Var a = ip.stack.Pop();
@@ -124,13 +124,16 @@ public static class JStack
         {
             if (b is VarList bl1)
             {
-                return (bl1, new VarFunction(ip => ip.stack.Push(a)));
+                return (bl1, new VarFunction(ip => { if (discarding) ip.stack.Pop(); ip.stack.Push(a); }));
             }
             else if (a is VarList al1)
             {
-                return (al1, new VarFunction(ip => ip.stack.Push(b)));
+                return (al1, new VarFunction(ip => { if (discarding) ip.stack.Pop(); ip.stack.Push(b); }));
             }
-            return (VarToRange(a), new VarFunction(ip => ip.stack.Push(b)));
+            return (VarToRange(a), new VarFunction(ip =>
+            {
+                if (discarding) ip.stack.Pop(); ip.stack.Push(b);
+            }));
         }
         else
         {
@@ -172,7 +175,7 @@ public static class JStack
         return (VarToRange(o), f);
     }
 
-    [Register("map")]
+    [Register("map", 0x4A)]
     public static void Map(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 2, ip =>
@@ -187,7 +190,7 @@ public static class JStack
         });
     }
 
-    [Register("reduce")]
+    [Register("reduce", 0x4B)]
     public static void Reduce(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 2, ip =>
@@ -208,7 +211,7 @@ public static class JStack
         });
     }
 
-    [Register("fold")]
+    [Register("fold", 0x4C)]
     public static void Fold(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 2, ip =>
@@ -226,7 +229,7 @@ public static class JStack
             ip.stack.Push(o);
         });
     }
-    [Register("cumulate")]
+    [Register("cumulate", 0x4D)]
     public static void Cumulate(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 2, ip =>
@@ -244,7 +247,7 @@ public static class JStack
         });
     }
 
-    [Register("transpose")]
+    [Register("transpose", 0x4E)]
     public static void Transpose(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -276,7 +279,7 @@ public static class JStack
         });
     }
 
-    [Register("sort")]
+    [Register("sort", 0x4F)]
     public static void Sort(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 1, ip =>
@@ -304,7 +307,7 @@ public static class JStack
         });
     }
 
-    [Register("where")]
+    [Register("where", 0x50)]
     public static void Where(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 2, ip =>
@@ -321,7 +324,7 @@ public static class JStack
         });
     }
 
-    [Register("takewhile")]
+    [Register("takewhile", 0x51)]
     public static void TakeWhile(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 2, ip =>
@@ -339,7 +342,7 @@ public static class JStack
         });
     }
 
-    [Register("reverse"), Alias("negate")]
+    [Register("reverse", 0x52), Alias("negate")]
     public static void Reverse(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -359,7 +362,7 @@ public static class JStack
         });
     }
 
-    [Register("length")]
+    [Register("length", 0x53)]
     public static void Length(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -374,14 +377,14 @@ public static class JStack
         });
     }
 
-    [Register("pullup")]
+    [Register("pullup", 0x54)]
     public static void PullUp(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Peek().Pop());
     }
 
-    [Register("pushdown")]
+    [Register("pushdown", 0x55)]
     public static void PushDown(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stackStack.Push(new());
@@ -389,25 +392,27 @@ public static class JStack
         ip.stackStack.Peek().Push(ip.stack.Pop());
     }
 
-    [Register("push")]
+    [Register("push", 0x56)]
     public static void Push(Interpreter ip)
     {
         Curry.Expect(ip, 2, ip =>
         {
             (VarList l, Var v) = ListAndVar(ip);
             l.data.Add(v);
+            ip.stack.Push(l);
         });
     }
-    [Register("enqueue")]
+    [Register("enqueue", 0x57)]
     public static void Enqueue(Interpreter ip)
     {
         Curry.Expect(ip, 2, ip =>
         {
             (VarList l, Var v) = ListAndVar(ip);
             l.data.Insert(0, v);
+            ip.stack.Push(l);
         });
     }
-    [Register("pop")]
+    [Register("pop", 0x58)]
     public static void Pop(Interpreter ip)
     {
         Curry.Expect(ip, 2, ip =>
@@ -415,9 +420,10 @@ public static class JStack
             Var v = ip.stack.Pop();
             if (v is VarList l && l.data.Count > 0)
                 l.data.RemoveAt(l.data.Count - 1);
+            ip.stack.Push(v);
         });
     }
-    [Register("dequeue")]
+    [Register("dequeue", 0x59)]
     public static void Dequeue(Interpreter ip)
     {
         Curry.Expect(ip, 2, ip =>
@@ -425,50 +431,51 @@ public static class JStack
             Var v = ip.stack.Pop();
             if (v is VarList l && l.data.Count > 0)
                 l.data.RemoveAt(0);
+            ip.stack.Push(v);
         });
     }
 
-    [Register("copy0")]
+    [Register("copy0", 0x5A)]
     public static void Pull0(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(0) ?? new VarNumber(0));
     }
-    [Register("copy1")]
+    [Register("copy1", 0x5B)]
     public static void Pull1(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(1) ?? new VarNumber(0));
     }
-    [Register("copy2")]
+    [Register("copy2", 0x5C)]
     public static void Pull2(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Peek().ElementAtOrDefault(2) ?? new VarNumber(0));
     }
-    [Register("arg0")]
+    [Register("arg0", 0x60)]
     public static void Arg0(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(0) ?? new VarNumber(0));
     }
-    [Register("arg1")]
+    [Register("arg1", 0x61)]
     public static void Arg1(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(1) ?? new VarNumber(0));
     }
-    [Register("arg2")]
+    [Register("arg2", 0x62)]
     public static void Arg2(Interpreter ip)
     {
         if (ip.stackStack.Count == 0) ip.stack.Push(new VarNumber(0));
         ip.stack.Push(ip.stackStack.Last().ElementAtOrDefault(2) ?? new VarNumber(0));
     }
 
-    [Register("contains"), Alias("any")]
+    [Register("contains", 0x5D), Alias("any")]
     public static void Contains(Interpreter ip)
     {
-        Curry.Expect(ip, 2, ip =>
+        Curry.ExpectFunctions(ip, 2, ip =>
         {
             Var a = ip.stack.Pop();
             Var b = ip.stack.Pop();
@@ -515,7 +522,7 @@ public static class JStack
         });
     }
 
-    [Register("first")]
+    [Register("first", 0x5E)]
     public static void First(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 1, ip =>
@@ -585,7 +592,7 @@ public static class JStack
         return new VarNumber(0);
     }
 
-    [Register("average"), Alias("mean")]
+    [Register("average", 0x5F), Alias("mean")]
     public static void Average(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -613,7 +620,7 @@ public static class JStack
         return VarSum(VarToRange(v));
     }
 
-    [Register("sum")]
+    [Register("sum", 0x64)]
     public static void Sum(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -621,4 +628,104 @@ public static class JStack
             ip.stack.Push(VarSum(ip.stack.Pop()));
         });
     }
+
+    public static Var VarRepeat(VarList l, Var b)
+    {
+        if (b is VarNumber n)
+        {
+            // If n is negative, reverse the list after we're done.
+            bool backwards = n.data < 0;
+            if (backwards) n = new VarNumber(-n.data);
+
+            // Repeat it an Integral amount of times
+            VarList o = new VarList();
+            for (int i = 0; i < n.data; i++)
+            {
+                for (int j = 0; j < l.data.Count; j++)
+                {
+                    o.data.Add(l.data[j]);
+                }
+            }
+
+            // Get the fractional component
+            int fract = (int)((n.data % 1) * l.data.Count);
+            for (int j = 0; j < fract; j++)
+            {
+                o.data.Add(l.data[j]);
+            }
+
+            if (backwards) o.data.Reverse();
+            return o;
+        }
+        else if (b is VarList bl)
+        {
+            VarList o = new VarList();
+            for (int i = 0; i < bl.data.Count; i++)
+            {
+                o.data.Add(VarRepeat(l, bl.data[i]));
+            }
+            return o;
+        }
+        return l;
+    }
+
+    [Register("repeat", 0x65)]
+    public static void Repeat(Interpreter ip)
+    {
+        Curry.Expect(ip, 2, ip =>
+        {
+            (VarList l, Var b) = ListAndVar(ip);
+            ip.stack.Push(VarRepeat(l, b));
+        });
+    }
+
+    [Register("empty", 0x66)]
+    public static void Empty(Interpreter ip)
+    {
+        ip.stack.Push(new VarList());
+    }
+
+    public static VarNumber VarProduct(Var v)
+    {
+        if (v is VarList l)
+        {
+            decimal sum = 1;
+            for (var i = 0; i < l.data.Count; i++)
+            {
+                if (l.data[i] is VarNumber n) sum *= n.data;
+                else sum *= VarProduct(l.data[i]).data;
+            }
+            return new VarNumber(sum);
+        }
+        if (v is VarNumber)
+        {
+            return VarProduct(Strings.VarToDigits(v));
+        }
+        return VarProduct(VarToRange(v));
+    }
+
+    [Register("product", 0x67)]
+    public static void Product(Interpreter ip)
+    {
+        Curry.Expect(ip, 1, ip =>
+        {
+            ip.stack.Push(VarProduct(ip.stack.Pop()));
+        });
+    }
+
+    /*public static Var VarIndex(VarList l, Var i){
+        if(i is VarNumber){
+            
+        }
+    }
+
+    [Register("index")]
+    public static void Index(Interpreter ip)
+    {
+        Curry.Expect(ip, 2, ip =>
+        {
+            (VarList l, Var i) = ListAndVar(ip);
+            
+        });
+    }*/
 }

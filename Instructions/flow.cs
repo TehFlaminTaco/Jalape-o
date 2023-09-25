@@ -3,10 +3,10 @@ using System.Linq;
 
 public class Flow
 {
-    [Register("ret")]
+    [Register("ret", 0x10)]
     public static void Ret(Interpreter ip) { ip.IP = ip.byteCode.Length; }
 
-    [Register("func", terminator = "ret", takeFunctions = true)]
+    [Register("func", 0x1F, terminator = "ret", takeFunctions = true)]
     public static void Func(Interpreter ip, byte[] data)
     {
         List<VarFunction> functions = new();
@@ -14,13 +14,13 @@ public class Flow
         while (i < data.Length) functions.Add(Interpreter.TakeFunction(data, ref i));
         ip.stack.Push(new VarFunction(ip => ip.Execute(functions)));
     }
-    [Register("asfunc", byteCount = 1, takeFunctions = true)]
+    [Register("asfunc", 0x11, byteCount = 1, takeFunctions = true)]
     public static void AsFunc(Interpreter ip, byte[] data)
     {
         var i = 0;
         ip.stack.Push(Interpreter.TakeFunction(data, ref i));
     }
-    [Register("aspair", byteCount = 2, takeFunctions = true)]
+    [Register("aspair", 0x12, byteCount = 2, takeFunctions = true)]
     public static void AsPair(Interpreter ip, byte[] data)
     {
         List<VarFunction> functions = new();
@@ -28,7 +28,7 @@ public class Flow
         while (i < data.Length) functions.Add(Interpreter.TakeFunction(data, ref i));
         ip.stack.Push(new VarFunction(ip => ip.Execute(functions)));
     }
-    [Register("astrio", byteCount = 3, takeFunctions = true)]
+    [Register("astrio", 0x13, byteCount = 3, takeFunctions = true)]
     public static void AsTrio(Interpreter ip, byte[] data)
     {
         List<VarFunction> functions = new();
@@ -37,7 +37,7 @@ public class Flow
         ip.stack.Push(new VarFunction(ip => ip.Execute(functions)));
     }
 
-    [Register("call")]
+    [Register("call", 0x14)]
     public static void Call(Interpreter ip)
     {
         Var l = null;
@@ -51,7 +51,7 @@ public class Flow
             F.Call(ip);
     }
 
-    [Register("while")]
+    [Register("while", 0x15)]
     public static void While(Interpreter ip)
     {
         Curry.ExpectFunctions(ip, 1, ip =>

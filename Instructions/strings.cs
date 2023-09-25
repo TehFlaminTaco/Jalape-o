@@ -1,24 +1,10 @@
 using System;
 using System.Linq;
-using System.Text;
 using System.Collections.Generic;
-using System.Reflection;
-using System.IO;
 
 public static class Strings
 {
-    public static string[] Dict = null;
-    public static string[] DictSorted = null;
-    public static void ParseDictionary()
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = assembly.GetManifestResourceNames().First(c => c.EndsWith("dictionary.txt"));
-        var dictStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-        Dict = new StreamReader(dictStream).ReadToEnd().Split('\n');
-        DictSorted = Dict.OrderByDescending(c => c.Length).ToArray();
-    }
-
-    [Register("tostring")]
+    [Register("tostring", 0x70)]
     public static void VarToString(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -27,92 +13,161 @@ public static class Strings
         });
     }
 
-    private const int START_WITH_CAPITAL = 0b1000;
-    private const int END_WITH_CAPITAL = 0b0100;
-    private const int FINISH_DICTIONARY = 0b0010;
-    private const int CONTINUE_DICTIONARY = 0b0001;
-    public static string Decompress(string s, bool dictionaryMode = false)
+    private const byte CONTINUE = 0b1000_0000;
+    private const byte BACKREF = 0b0100_0000;
+    private const byte RUNLEN = 0b0010_0000;
+    private const byte BACKREFLEN = 0b0011_1111;
+    private const byte RUNCOUNT = 0b0001_1111;
+    public static string Decompress(byte[] c)
     {
         int ptr = 0;
-        byte[] c = ShortUF8.ToShortBytes(s);
         List<byte> o = new();
         while (ptr < c.Length)
         {
-            if (dictionaryMode)
+            byte b = c[ptr++];
+            bool DoContinue = (b & CONTINUE) > 0;
+            bool BackRef = (b & BACKREF) > 0;
+            bool RunLen = (b & RUNLEN) > 0;
+            byte RunCount = (byte)(b & RUNCOUNT);
+
+            if (BackRef)
             {
-                int n = c[ptr++];
-                int flags = n >> 4;
-                int byteCount = (n >> 2) & 0b11;
-                n &= 0b11;
-                for (int i = 0; i < byteCount && ptr < c.Length; i++)
+                byte len = (byte)((b & BACKREFLEN) + 3);
+                byte dist = (byte)(c[ptr++] + 1);
+                if (o.Count - (dist + 1) < 0)
                 {
-                    n <<= 8;
-                    n += c[ptr++];
+                    throw new Exception($"{ShortUF8.ToRegularString(o.ToArray())}\nDecompression out of bounds! MAX: {o.Count} GOT: {dist + 1} AT: {ptr}");
                 }
-                int dictIndex = n >> 6;
-                if (dictIndex >= Dict.Length)
+                for (int i = 0; i < len; i++)
                 {
-                    continue;
-                }
-                string entry = Dict[dictIndex].ToLower();
-                if ((flags & START_WITH_CAPITAL) > 0)
-                {
-                    entry = entry[0..1].ToUpper() + entry[1..];
-                }
-                if ((flags & END_WITH_CAPITAL) > 0)
-                {
-                    entry = entry[0..1] + entry[1..].ToUpper();
-                }
-                s += entry;
-                if ((flags & FINISH_DICTIONARY) > 0)
-                {
-                    dictionaryMode = false;
-                }
-                if ((flags & CONTINUE_DICTIONARY) == 0)
-                {
-                    break;
+                    o.Add(o[o.Count - (dist + 1)]);
                 }
             }
             else
             {
-                int n = c[ptr++];
-                int CONTINUE = n >> 7;
-                int RUNLENGTH = (n >> 6) & 0b1;
-                int len = n & 0b111111;
-                if (CONTINUE == 0)
+                if (RunLen)
                 {
-                    break;
-                }
-                if (len == 0)
-                {
-                    dictionaryMode = true;
-                }
-                else if (RUNLENGTH == 0)
-                {
-                    byte b = c[ptr++];
-                    for (int i = 0; i < len; i++)
-                    {
-                        o.Add(b);
-                    }
+                    byte CH = c[ptr++];
+                    for (int i = 0; i < (RunCount + 3); i++) o.Add(CH);
                 }
                 else
                 {
-                    for (int i = 0; i < len && ptr < c.Length; i++)
-                        o.Add(c[ptr++]);
+                    for (int i = 0; i < (RunCount + 1); i++) o.Add(c[ptr++]);
                 }
             }
+
+            if (!DoContinue) break;
         }
         return ShortUF8.ToRegularString(o.ToArray());
     }
 
-    public static byte[] Compress(string s)
+    public static int GetDecompressLength(int index, byte[] c, bool dictionaryMode)
     {
-        List<byte> b = new();
-        if (s.Length == 1)
+        int ptr = index;
+        while (ptr < c.Length)
         {
-            return new byte[] { Instruction.Names["char"], ShortUF8.ToShortBytes(s)[0] };
+            byte b = c[ptr++];
+            bool DoContinue = (b & CONTINUE) > 0;
+            bool BackRef = (b & BACKREF) > 0;
+            bool RunLen = (b & RUNLEN) > 0;
+            byte RunCount = (byte)(b & RUNCOUNT);
+
+            if (BackRef || RunLen)
+            {
+                ptr++;
+            }
+            else
+            {
+                ptr += RunCount + 1;
+            }
+
+            if (!DoContinue) break;
         }
-        return b.ToArray();
+        return ptr - index;
+    }
+
+    public static byte[] Compress(string S)
+    {
+        byte[] b = ShortUF8.ToShortBytes(S);
+        int ptr = 0;
+        List<byte> o = new();
+        o.Add(Instruction.Names["string"]);
+        List<byte> charBuffer = new();
+        while (ptr < b.Length)
+        {
+            // Check for potential backreferences.
+            (int target, int length)? backRef = null;
+            if (ptr > 0)
+            {
+                List<(int target, int length)> backReferneces = new();
+                for (int i = Math.Max(0, ptr - 256); i <= ptr - 1; i++)
+                {
+                    int p = ptr;
+                    int I = i;
+                    int l = 0;
+                    while (p < b.Length && b[I++] == b[p++] && l <= BACKREFLEN + 3) l++;
+                    if (l > 2) backReferneces.Add((i, l));
+                }
+
+                if (backReferneces.Count > 0) backRef = backReferneces.MaxBy(c => c.length);
+            }
+
+            byte CH = b[ptr];
+            int runLength = 0;
+            // Check for potential runlengths
+            {
+                int p = ptr;
+                while (p < b.Length && b[p++] == CH && runLength <= RUNLEN + 3) runLength++;
+            }
+
+            if (backRef is not null && backRef.Value.length > runLength)
+            {
+                if (charBuffer.Count > 0)
+                {
+                    o.Add((byte)(CONTINUE | (charBuffer.Count - 1)));
+                    o.AddRange(charBuffer);
+                    charBuffer = new();
+                }
+                (int brTarg, int brLen) = backRef.Value;
+                byte dc = (byte)((ptr + brLen) < b.Length ? CONTINUE : 0);
+                o.Add((byte)(dc | BACKREF | (brLen - 3)));
+                o.Add((byte)((ptr - brTarg) - 2));
+                ptr += brLen;
+            }
+            else if (runLength > 2)
+            {
+                if (charBuffer.Count > 0)
+                {
+                    o.Add((byte)(CONTINUE | (charBuffer.Count - 1)));
+                    o.AddRange(charBuffer);
+                    charBuffer = new();
+                }
+                byte dc = (byte)((ptr + runLength) < b.Length ? CONTINUE : 0);
+                o.Add((byte)(dc | RUNLEN | (runLength - 3)));
+                o.Add((byte)(CH));
+                ptr += runLength;
+            }
+            else
+            {
+                charBuffer.Add(b[ptr++]);
+                if (charBuffer.Count > RUNCOUNT)
+                {
+                    byte dc = (byte)(ptr < b.Length ? CONTINUE : 0);
+                    o.Add((byte)(dc | (charBuffer.Count - 1)));
+                    o.AddRange(charBuffer);
+                    charBuffer = new();
+                }
+            }
+        }
+
+        if (charBuffer.Count > 0)
+        {
+            o.Add((byte)(charBuffer.Count - 1));
+            o.AddRange(charBuffer);
+            charBuffer = new();
+        }
+
+        return o.ToArray();
     }
 
     public static VarList VarToDigits(Var v, int bse = 10)
@@ -141,7 +196,7 @@ public static class Strings
         return new VarList();
     }
 
-    [Register("digits")]
+    [Register("digits", 0x71)]
     public static void Digits(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -150,7 +205,7 @@ public static class Strings
         });
     }
 
-    [Register("tobase")]
+    [Register("tobase", 0x72)]
     public static void ToBase(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -169,7 +224,7 @@ public static class Strings
         });
     }
 
-    [Register("join")]
+    [Register("join", 0x73)]
     public static void Join(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -218,7 +273,7 @@ public static class Strings
         });
     }
 
-    [Register("print")]
+    [Register("print", 0x74)]
     public static void Print(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
@@ -226,12 +281,18 @@ public static class Strings
             Console.WriteLine(ip.stack.Pop());
         });
     }
-    [Register("write")]
+    [Register("write", 0x75)]
     public static void Write(Interpreter ip)
     {
         Curry.Expect(ip, 1, ip =>
         {
             Console.Write(ip.stack.Pop());
         });
+    }
+
+    [Register("string", 7, stringTaker = 1)]
+    public static void DictString(Interpreter ip, byte[] data)
+    {
+        ip.stack.Push(new VarList(Decompress(data)));
     }
 }

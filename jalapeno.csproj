@@ -5,7 +5,4 @@
     <TargetFramework>netcoreapp6.0</TargetFramework>
 		<StartupObject>Jalapeno</StartupObject>
   </PropertyGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="dictionary.txt" />
-  </ItemGroup>
 </Project>

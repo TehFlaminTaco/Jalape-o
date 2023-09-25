@@ -10,9 +10,12 @@ public class RegisterAttribute : System.Attribute
     public int byteCount = 1;
     public string terminator = "";
     public bool takeFunctions = false;
-    public RegisterAttribute(string name)
+    public int stringTaker = 0;
+    public byte setByte;
+    public RegisterAttribute(string name, byte setByte)
     {
         this.name = name;
+        this.setByte = setByte;
     }
 }
 
@@ -33,7 +36,7 @@ public class Instruction
 
     public static void DoRegistrations()
     {
-        byte i = 0;
+        HashSet<byte> takenBytes = new();
         var registrations = System.Reflection.Assembly
             .GetExecutingAssembly().GetTypes()
             .SelectMany(c => c.GetMethods())
@@ -45,15 +48,28 @@ public class Instruction
         }
         foreach (var (method, attr) in registrations)
         {
+            if (takenBytes.Contains(attr.setByte))
+            {
+                throw new ArgumentException($"Unexpected collision for 0x{attr.setByte:X} between {ByCode[attr.setByte]} and {method}");
+            }
+            takenBytes.Add(attr.setByte);
             string name = attr.name;
-            Names[attr.name.ToLower()] = i;
+            if (Names.ContainsKey(attr.name.ToLower()))
+            {
+                throw new ArgumentException($"Unexpected collision for '{attr.name}' between {ByCode[Names[attr.name.ToLower()]].Item1} and {method}");
+            }
+            Names[attr.name.ToLower()] = attr.setByte;
             foreach (var a in method.GetCustomAttributes<AliasAttribute>(false))
             {
                 name += "/" + a.name;
-                Names[a.name.ToLower()] = i;
+                if (Names.ContainsKey(a.name.ToLower()))
+                {
+                    throw new ArgumentException($"Unexpected collision for '{a.name}' between {ByCode[Names[a.name.ToLower()]].Item1} and {method}");
+                }
+                Names[a.name.ToLower()] = attr.setByte;
             }
-            Jalapeno.WriteDebug($"{name}:{new String(' ', 24 - name.Length)}{BitConverter.ToString(new byte[] { i })}");
-            ByCode[i++] = (method, attr);
+            Jalapeno.WriteDebug($"{name}:{new String(' ', 24 - name.Length)}{BitConverter.ToString(new byte[] { attr.setByte })}");
+            ByCode[attr.setByte] = (method, attr);
         }
     }
 }

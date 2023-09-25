@@ -1,4 +1,4 @@
-run = 'dotnet run test.jna /d "4"'
+run = 'dotnet run test.jna /g'
 entrypoint = "jalapeno.cs"
 
 hidden = ["bin", "obj"]
