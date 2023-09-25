@@ -77,7 +77,7 @@ class Jalapeno
             if (interp.stack.Count == 1) Console.Write(interp.stack.Pop());
             else Console.WriteLine(interp.stack.Pop());
         }
-		WriteGolf($"```");
+		WriteGolf($"\n```");
     }
 
     public static void WriteDebug(string format, params object[] values)
