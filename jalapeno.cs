@@ -56,7 +56,7 @@ class Jalapeno
 		WriteGolf("    " + Encoding.UTF8.GetString(raw).Replace("\n", "\n    ") + "\n");
         WriteDebug(byteString);
         WriteDebug("--Output--");
-		WriteGolfNoline($"## Output\n    ");
+		WriteGolf($"## Output\n```");
         try { interp.Execute(interp.Parse()); }
         catch (Exception e)
         {
@@ -77,6 +77,7 @@ class Jalapeno
             if (interp.stack.Count == 1) Console.Write(interp.stack.Pop());
             else Console.WriteLine(interp.stack.Pop());
         }
+		WriteGolf($"```");
     }
 
     public static void WriteDebug(string format, params object[] values)

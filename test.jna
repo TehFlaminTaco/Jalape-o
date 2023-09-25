@@ -1,1 +1,4 @@
-"*"
+"*" 10 repeat // "**********"
+'\n' push	  // "**********\n"
+10 repeat	  // x10
+			  // Implicit Output
