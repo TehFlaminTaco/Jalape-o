@@ -90,19 +90,19 @@ export function NumberConstant(n: number): string {
   }
 }
 
-QRegister(Zero, "0", 0x30);
-QRegister(One, "1", 0x31);
-QRegister(Two, "2", 0x32);
-QRegister(Three, "3", 0x33);
-QRegister(Four, "4", 0x34);
-QRegister(Five, "5", 0x35);
-QRegister(Six, "6", 0x36);
-QRegister(Seven, "7", 0x37);
-QRegister(Eight, "8", 0x38);
-QRegister(Nine, "9", 0x39);
-QRegister(Ten, "e₁", 0x3a);
-QRegister(OneHundred, "e₂", 0x3b);
-QRegister(NegativeOne, "-₁", 0x3c);
-QRegister(Half, "½", 0x3d);
-QRegister(IntegerConstant, "$", 0x3e);
-QRegister(FloatConstant, "‰", 0x3f);
+QRegister("Zero", Zero, "0", 0x30);
+QRegister("One", One, "1", 0x31);
+QRegister("Two", Two, "2", 0x32);
+QRegister("Three", Three, "3", 0x33);
+QRegister("Four", Four, "4", 0x34);
+QRegister("Five", Five, "5", 0x35);
+QRegister("Six", Six, "6", 0x36);
+QRegister("Seven", Seven, "7", 0x37);
+QRegister("Eight", Eight, "8", 0x38);
+QRegister("Nine", Nine, "9", 0x39);
+QRegister("Ten", Ten, "e₁", 0x3a);
+QRegister("OneHundred", OneHundred, "e₂", 0x3b);
+QRegister("NegativeOne", NegativeOne, "-₁", 0x3c);
+QRegister("Half", Half, "½", 0x3d);
+QRegister("IntegerConstant", IntegerConstant, "$", 0x3e);
+QRegister("FloatConstant", FloatConstant, "‰", 0x3f);

@@ -1,6 +1,6 @@
 import { Global } from "../GlobalState";
 import { QRegister } from "../Registry";
-import { AsNumber, AsString, Link, Value } from "../Types";
+import { AsNumber, AsString, Link, Value, Vectorized } from "../Types";
 
 function Add(left: Value, r: Link): Value {
   function Adder(left: Value, right: Value): Value {
@@ -210,6 +210,36 @@ function LessEqual(left: Value, r: Link): Value {
   return _Compare(left, r.Call(Global.Inputs[0])) <= 0 ? 1 : 0;
 }
 
+function BitwiseOr(left: Value, right: Link): Value {
+  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+    AsNumber(left)|AsNumber(right)
+  )
+}
+
+function BitwiseAnd(left: Value, right: Link): Value {
+  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+    AsNumber(left)&AsNumber(right)
+  )
+}
+
+function BitwiseXor(left: Value, right: Link): Value {
+  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+    AsNumber(left)^AsNumber(right)
+  )
+}
+
+function BitshiftLeft(left: Value, right: Link): Value {
+  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+    AsNumber(left)<<AsNumber(right)
+  )
+}
+
+function BitshiftRight(left: Value, right: Link): Value {
+  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+    AsNumber(left)>>AsNumber(right)
+  )
+}
+
 function Sqrt(left: Value): Value {
   if (typeof left === "number") {
     return Math.sqrt(left);
@@ -279,24 +309,29 @@ function Factorial(left: Value): Value {
   return left;
 }
 
-QRegister(Add, "+", 0x50, "+");
-QRegister(Subtract, "-", 0x51, "-");
-QRegister(Multiply, "*", 0x52, "*");
-QRegister(Divide, "/", 0x53, "/");
-QRegister(Modulo, "%", 0x54, "%");
-QRegister(Power, "^", 0x55, "^");
-QRegister(And, "&", 0x56, "&&");
-QRegister(Or, "|", 0x57, "||");
-QRegister(Not, "¬", 0x58, "!");
-QRegister(Equal, "=", 0x59, "=");
-QRegister(NotEqual, "≠", 0x5a, "!=");
-QRegister(Greater, ">", 0x5b, ">");
-QRegister(Less, "<", 0x5c, "<");
-QRegister(GreaterEqual, "≥", 0x5d, ">=");
-QRegister(LessEqual, "≤", 0x5e, "<=");
-QRegister(Compare, "≡", 0x5f, "<>");
-QRegister(Sqrt, "√", 0x60);
-QRegister(Square, "²", 0x61);
-QRegister(Cubed, "³", 0x62);
-QRegister(Sign, "±", 0x63);
-QRegister(Factorial, "!", 0x64);
+QRegister("Add", Add, "+", 0x50, "+");
+QRegister("Subtract", Subtract, "-", 0x51, "-");
+QRegister("Multiply", Multiply, "*", 0x52, "*");
+QRegister("Divide", Divide, "/", 0x53, "/");
+QRegister("Modulo", Modulo, "%", 0x54, "%");
+QRegister("Power", Power, "^", 0x55, "^");
+QRegister("And", And, "&", 0x56, "&&");
+QRegister("Or", Or, "|", 0x57, "||");
+QRegister("Not", Not, "¬", 0x58, "!");
+QRegister("Equal", Equal, "=", 0x59, "=");
+QRegister("NotEqual", NotEqual, "≠", 0x5a, "!=");
+QRegister("Greater", Greater, ">", 0x5b, ">");
+QRegister("Less", Less, "<", 0x5c, "<");
+QRegister("GreaterEqual", GreaterEqual, "≥", 0x5d, ">=");
+QRegister("LessEqual", LessEqual, "≤", 0x5e, "<=");
+QRegister("Compare", Compare, "≡", 0x5f, "<>");
+QRegister("Sqrt", Sqrt, "√", 0x60);
+QRegister("Square", Square, "²", 0x61);
+QRegister("Cubed", Cubed, "³", 0x62);
+QRegister("Sign", Sign, "±", 0x63);
+QRegister("Factorial", Factorial, "!", 0x64);
+QRegister("BitwiseOr", BitwiseOr, "|₂", 0x65, '|');
+QRegister("BitwiseAnd", BitwiseAnd, "&₂", 0x66, '&');
+QRegister("BitwiseXor", BitwiseXor, "~", 0x67, '~');
+QRegister("BitshiftLeft", BitshiftLeft, "«", 0x68, '<<');
+QRegister("BitshiftRight", BitshiftRight, "»", 0x69, '>>');

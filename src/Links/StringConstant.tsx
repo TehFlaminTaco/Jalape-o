@@ -34,10 +34,10 @@ function SingletonByte(this: Link): Value {
   return this.store["string"];
 }
 
-QRegister(ByteString, '"', 0x20);
-QRegister(SingletonByte, "'", 0x21);
-QRegister(SmazString, "»", 0x22);
-QRegister(SingletonSmaz, "›", 0x23);
+QRegister("ByteString", ByteString, '"', 0x20);
+QRegister("SingletonByte", SingletonByte, "'", 0x21);
+QRegister("SmazString", SmazString, "„", 0x22);
+QRegister("SingletonSmaz", SingletonSmaz, "›", 0x23);
 
 function EmptyString(this: Link): Value {
   return "";
@@ -47,7 +47,7 @@ function Space(this: Link): Value {
   return " ";
 }
 
-QRegister(EmptyString, '"₀', 0x24);
+QRegister("EmptyString", EmptyString, '"₀', 0x24);
 CheekyCompressions.set("", 0x24);
-QRegister(Space, " ", 0x25);
+QRegister("Space", Space, " ", 0x25);
 CheekyCompressions.set(" ", 0x25);

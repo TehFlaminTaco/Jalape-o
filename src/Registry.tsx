@@ -85,12 +85,13 @@ export function Register(
 }
 
 export function QRegister(
+  behaviourName: string,
   behaviour: Behaviour,
   char: string,
   byte: number,
   ...aliases: string[]
 ) {
-  Register(behaviour.name, char, byte, behaviour, ...aliases);
+  Register(behaviourName, char, byte, behaviour, ...aliases);
 }
 
 declare global {
