@@ -1,0 +1,17 @@
+{
+    "include": [
+        "./src/**/*"
+    ],
+    "compilerOptions": {
+        "strict": true,
+        "esModuleInterop": true,
+        "lib": [
+            "dom",
+            "esnext"
+        ],
+        "target": "esnext",
+        "jsx": "react-jsx",
+        "moduleResolution": "node",
+        "outDir": "./build"
+    }
+}

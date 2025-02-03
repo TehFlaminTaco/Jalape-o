@@ -1,0 +1,5 @@
+/build
+/node_modules
+/.codesandbox
+/package-lock.json
+/yarn.lock
