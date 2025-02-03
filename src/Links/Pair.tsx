@@ -1,6 +1,6 @@
 import { Global } from "../GlobalState";
 import { QRegister } from "../Registry";
-import { Link, Value, AsList } from "../Types";
+import { Link, Value, AsList, Truthy } from "../Types";
 
 function Pair(left: Value, right: Link): Value {
   return AsList(left).concat([right.Call(Global.Inputs[0])]);
@@ -35,14 +35,14 @@ function Range(left: Value, r: Link): Value {
     return `${left}${right}`;
   }
   // If none of the above, return either if truthy
-  return left || right;
+  return Truthy(left) ? left : right;
 }
 
 function Box(left: Value, right: Link): Value {
   return [right.Call(Global.Inputs[0])];
 }
 
-QRegister("Pair", Pair, ",", 0x26, ",");
-QRegister("EmptyList", EmptyList, "∅", 0x27);
+QRegister("Pair", Pair, ",", 0x29, ",");
+QRegister("EmptyList", EmptyList, "∅", 0x2A);
 QRegister("Range", Range, "‥", 0x2e, "..");
 QRegister("Box", Box, "□", 0x2f, "□");

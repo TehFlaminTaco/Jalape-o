@@ -14,7 +14,7 @@ const ASSERT_UNIQUE = true;
 // ₀₁₂₃₄₅₆₇₈₉ₓ
 
 export function FromCharacters(charCode: string): Uint8Array {
-  const chars = [...charCode.matchAll(/¿[0-9A-Fa-f]{2}\?|.[₀-₉ₓ]?/g)];
+  const chars = [...charCode.matchAll(/¿[0-9A-Fa-f]{2}\?|.[₀-₉ₓ₊₋]?/g)];
   const res = new Uint8Array(chars.length);
   let i = 0;
   for (const c of chars) {
@@ -48,6 +48,8 @@ export function Register(
   behaviour: Behaviour,
   ...aliases: string[]
 ) {
+  if(!char.match(/^.[₀-₉ₓ₊₋]?$/))
+    throw new Error(`Bad character representation for "${name}". "${char}" is not a valid token`)
   if (ASSERT_UNIQUE) {
     if (ByteMap.has(byte))
       throw new Error(

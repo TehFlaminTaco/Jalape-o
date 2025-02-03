@@ -39,15 +39,33 @@ QRegister("SingletonByte", SingletonByte, "'", 0x21);
 QRegister("SmazString", SmazString, "„", 0x22);
 QRegister("SingletonSmaz", SingletonSmaz, "›", 0x23);
 
-function EmptyString(this: Link): Value {
+function EmptyString(): Value {
   return "";
 }
 
-function Space(this: Link): Value {
+function Space(): Value {
   return " ";
+}
+
+function CapitalAlphabet(): Value {
+  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+}
+
+function LowercaseAlphabet(): Value {
+  return "abcdefghijklmnopqrstuvwxyz";
+}
+
+function PrintableAscii(): Value {
+  return " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 }
 
 QRegister("EmptyString", EmptyString, '"₀', 0x24);
 CheekyCompressions.set("", 0x24);
 QRegister("Space", Space, " ", 0x25);
 CheekyCompressions.set(" ", 0x25);
+QRegister("CapitalAlphabet", CapitalAlphabet, 'A', 0x26);
+CheekyCompressions.set("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0x26);
+QRegister("LowercaseAlphabet", LowercaseAlphabet, 'a', 0x27);
+CheekyCompressions.set("abcdefghijklmnopqrstuvwxyz", 0x27);
+QRegister("PrintableAscii", PrintableAscii, "¢₁", 0x28);
+CheekyCompressions.set(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 0x28);

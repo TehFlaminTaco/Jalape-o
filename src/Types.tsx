@@ -24,6 +24,7 @@ export function AsString(v: Value): string {
 }
 
 export function AsList(v: Value): Value[] {
+  if (typeof v === "string") return v.split('');
   if (typeof v !== "object") return [v];
   return v;
 }
