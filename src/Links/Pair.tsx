@@ -42,7 +42,7 @@ function Box(left: Value, right: Link): Value {
   return [right.Call(Global.Inputs[0])];
 }
 
-QRegister(Pair, ",", 0x26, ",");
-QRegister(EmptyList, "∅", 0x27);
-QRegister(Range, "‥", 0x2e, "..");
-QRegister(Box, "□", 0x2f, "□");
+QRegister("Pair", Pair, ",", 0x26, ",");
+QRegister("EmptyList", EmptyList, "∅", 0x27);
+QRegister("Range", Range, "‥", 0x2e, "..");
+QRegister("Box", Box, "□", 0x2f, "□");

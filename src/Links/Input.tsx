@@ -48,8 +48,8 @@ export function InputIndexLink(ind: number): Link {
   return l;
 }
 
-QRegister(Input0, "I₀", 0x90);
-QRegister(Input1, "I₁", 0x91);
-QRegister(Input2, "I₂", 0x92);
-QRegister(Input3, "I₃", 0x93);
-QRegister(InputX, "Iₓ", 0x94);
+QRegister("Input0", Input0, "I₀", 0x90);
+QRegister("Input1", Input1, "I₁", 0x91);
+QRegister("Input2", Input2, "I₂", 0x92);
+QRegister("Input3", Input3, "I₃", 0x93);
+QRegister("InputX", InputX, "Iₓ", 0x94);

@@ -4,4 +4,4 @@ function Noop() {
   return undefined;
 }
 
-QRegister(Noop, "⦻", 0x00);
+QRegister("Noop", Noop, "⦻", 0x00);

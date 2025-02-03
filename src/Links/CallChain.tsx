@@ -33,7 +33,7 @@ export function CallChainIndex(ind: number): string {
   }
 }
 
-QRegister(CallChain0, "C₀", 0xc0);
-QRegister(CallChain1, "C₁", 0xc1);
-QRegister(CallChain2, "C₂", 0xc2);
-QRegister(CallChainX, "Cₓ", 0xc3);
+QRegister("CallChain0", CallChain0, "C₀", 0xc0);
+QRegister("CallChain1", CallChain1, "C₁", 0xc1);
+QRegister("CallChain2", CallChain2, "C₂", 0xc2);
+QRegister("CallChainX", CallChainX, "Cₓ", 0xc3);

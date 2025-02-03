@@ -1,6 +1,6 @@
 import { Global, WithInputs } from "../GlobalState";
 import { QRegister } from "../Registry";
-import { AsList, AsNumber, Link, Value } from "../Types";
+import { AsList, AsNumber, Link, Value, Vectorized } from "../Types";
 
 function Map(left: Value, right: Link): Value {
   return AsList(left).map((x) => right.Call(x));
@@ -64,10 +64,30 @@ function First(left: Value): Value {
   return AsList(left)[0];
 }
 
+function FirstWhere(left: Value, predicate: Link): Value {
+  if (typeof left === "string") left = left.split('');
+  left = AsList(left);
+  for(let i=0; i < left.length; i++)
+    if(predicate.Call(left[i]))
+      return left[i];
+  return undefined;
+}
+
+function FirstIndexOf(left: Value, predicate: Link): Value {
+  if (typeof left === "string") left = left.split('');
+  left = AsList(left);
+  for(let i=0; i < left.length; i++)
+    if(predicate.Call(left[i]))
+      return i;
+  return -1;
+}
+
 function Head(left: Value, count: Link): Value {
-  if (typeof left === "string")
-    return left.slice(0, AsNumber(count.Call(Global.Inputs[0])));
-  return AsList(left).slice(0, AsNumber(count.Call(Global.Inputs[0])));
+  return new Vectorized(count.Call(Global.Inputs[0])).get(count => {
+    if (typeof left === "string")
+      return left.slice(0, AsNumber(count));
+    return AsList(left).slice(0, AsNumber(count));
+  });
 }
 
 function Last(left: Value): Value {
@@ -75,20 +95,42 @@ function Last(left: Value): Value {
   return AsList(left).last();
 }
 
+function LastWhere(left: Value, predicate: Link): Value {
+  if (typeof left === "string") left = left.split('');
+  left = AsList(left);
+  for(let i=left.length - 1; i >= 0; i--)
+    if(predicate.Call(left[i]))
+      return left[i];
+  return undefined;
+}
+
+function LastIndexOf(left: Value, predicate: Link): Value {
+  if (typeof left === "string") left = left.split('');
+  left = AsList(left);
+  for(let i=left.length - 1; i >= 0; i--)
+    if(predicate.Call(left[i]))
+      return i;
+  return -1;
+}
+
 function Tail(left: Value, count: Link): Value {
-  if (typeof left === "string")
-    return left.slice(AsNumber(count.Call(Global.Inputs[0])));
-  return AsList(left).slice(AsNumber(count.Call(Global.Inputs[0])));
+  return new Vectorized(count.Call(Global.Inputs[0])).get(count => {
+    if (typeof left === "string")
+      return left.slice(AsNumber(count));
+    return AsList(left).slice(AsNumber(count));
+  });
 }
 
 function AtIndex(left: Value, index: Link): Value {
-  return AsList(left)[AsNumber(index.Call(Global.Inputs[0]))];
+  return new Vectorized(index.Call(Global.Inputs[0])).get(index=>AsList(left)[AsNumber(index)]);
 }
 
 function Slice(left: Value, start: Link, length: Link): Value {
-  return AsList(left).slice(
-    AsNumber(start.Call(Global.Inputs[0])),
-    AsNumber(start.Call(Global.Inputs[0])) + AsNumber(length.Call(Global.Inputs[0]))
+  return new Vectorized(start.Call(Global.Inputs[0]), length.Call(Global.Inputs[0])).get((start, length)=>
+    AsList(left).slice(
+      AsNumber(start),
+      AsNumber(start) + AsNumber(length)
+    )
   );
 }
 
@@ -200,28 +242,32 @@ function ProductBy(left: Value, right: Link): Value {
     Duplicate symbols are never allowed, but substring suffixes are allowed. eg. '↧' and '↧₁'
 */
 
-QRegister(Map, "↦", 0xd0);
-QRegister(Filter, "↥", 0xd1);
-QRegister(Reduce, "↧", 0xd2);
-QRegister(ReduceInitial, "↧₁", 0xd3);
-QRegister(Fold, "↩", 0xd4);
-QRegister(FoldInitial, "↩₁", 0xd5);
-QRegister(Length, "↔", 0xd6);
-QRegister(Reverse, "↶", 0xd7);
-QRegister(First, "⇤₁", 0xd8);
-QRegister(Head, "⇤ₓ", 0xd9);
-QRegister(Last, "⇥", 0xda);
-QRegister(Tail, "⇥ₓ", 0xdb);
-QRegister(AtIndex, "⇪", 0xdc);
-QRegister(Slice, "⇪ₓ", 0xdd);
-QRegister(Sort, "⇅", 0xde);
-QRegister(SortBy, "⇅ₓ", 0xdf);
-QRegister(Unique, "u", 0xe0);
-QRegister(UniqueBy, "uₓ", 0xe1);
-QRegister(Permutations, "p", 0xe2);
-QRegister(Choices, "c", 0xe3);
-QRegister(ChoicesOfLength, "cₓ", 0xe4);
-QRegister(Sum, "Σ", 0xe5);
-QRegister(SumBy, "Σₓ", 0xe6);
-QRegister(Product, "Π", 0xe7);
-QRegister(ProductBy, "Πₓ", 0xe8);
+QRegister("Map", Map, "↦", 0xd0);
+QRegister("Filter", Filter, "↥", 0xd1);
+QRegister("Reduce", Reduce, "↧", 0xd2);
+QRegister("ReduceInitial", ReduceInitial, "↧₁", 0xd3);
+QRegister("Fold", Fold, "↩", 0xd4);
+QRegister("FoldInitial", FoldInitial, "↩₁", 0xd5);
+QRegister("Length", Length, "↔", 0xd6);
+QRegister("Reverse", Reverse, "↶", 0xd7);
+QRegister("First", First, "⇤", 0xd8);
+QRegister("FirstWhere", FirstWhere, "⇤₀", 0xd9);
+QRegister("FirstIndexOf", FirstIndexOf, "⇤₁", 0xdA);
+QRegister("Head", Head, "⇤ₓ", 0xdB);
+QRegister("Last", Last, "⇥", 0xdC);
+QRegister("LastWhere", LastWhere, "⇥₀", 0xdD);
+QRegister("LastIndexOf", LastIndexOf, "⇥₁", 0xdE);
+QRegister("Tail", Tail, "⇥ₓ", 0xdF);
+QRegister("AtIndex", AtIndex, "⇪", 0xE0);
+QRegister("Slice", Slice, "⇪ₓ", 0xE1);
+QRegister("Sort", Sort, "⇅", 0xE2);
+QRegister("SortBy", SortBy, "⇅ₓ", 0xE3);
+QRegister("Unique", Unique, "u", 0xe4);
+QRegister("UniqueBy", UniqueBy, "uₓ", 0xe5);
+QRegister("Permutations", Permutations, "p", 0xe6);
+QRegister("Choices", Choices, "c", 0xe7);
+QRegister("ChoicesOfLength", ChoicesOfLength, "cₓ", 0xe8);
+QRegister("Sum", Sum, "Σ", 0xe9);
+QRegister("SumBy", SumBy, "Σₓ", 0xea);
+QRegister("Product", Product, "Π", 0xeb);
+QRegister("ProductBy", ProductBy, "Πₓ", 0xec);

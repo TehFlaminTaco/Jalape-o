@@ -50,9 +50,9 @@ function FiveGroup(
   return e.Call(left);
 }
 
-QRegister(BracketStart, "{", 0xc4);
-QRegister(BracketEnd, "}", 0xc5);
-QRegister(TwoGroup, "{₂", 0xc6);
-QRegister(ThreeGroup, "{₃", 0xc7);
-QRegister(FourGroup, "{₄", 0xc8);
-QRegister(FiveGroup, "{₅", 0xc9);
+QRegister("BracketStart", BracketStart, "{", 0xc4);
+QRegister("BracketEnd", BracketEnd, "}", 0xc5);
+QRegister("TwoGroup", TwoGroup, "{₂", 0xc6);
+QRegister("ThreeGroup", ThreeGroup, "{₃", 0xc7);
+QRegister("FourGroup", FourGroup, "{₄", 0xc8);
+QRegister("FiveGroup", FiveGroup, "{₅", 0xc9);

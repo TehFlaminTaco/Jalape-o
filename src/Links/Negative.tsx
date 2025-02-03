@@ -14,4 +14,4 @@ function Negative(left: Value, right: Value): Value {
   }
 }
 
-QRegister(Negative, "-₀", 0x40);
+QRegister("Negative", Negative, "-₀", 0x40);

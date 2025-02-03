@@ -247,9 +247,10 @@ function SetupAce(e: Ace.Editor){
   const wordCompleter = {
     getCompletions: function(editor: Ace.Editor, session: Ace.EditSession, pos: Ace.Point, prefix: string, callback: Ace.CompleterCallback) {
       callback(null, [...NamesToBytes.keys()].map(c=>({
-        caption: Metas.get(c)!,
+        caption: Metas.getStructure(c)!,
         value: c,
-        meta: ""
+        meta: "",
+        docText: Metas.getDescription(c)!
       })));
     }
   }

@@ -129,19 +129,19 @@ function Format3(left: Value, child1: Link, child2: Link, child3: Link){
 }
 
 
-QRegister(Print, "P", 0x10);
-QRegister(Write, "W", 0x11);
-QRegister(Replace, "R", 0x12);
-QRegister(Split, "S", 0x13);
-QRegister(Join, "J", 0x14);
-QRegister(JoinBy, "j", 0x15);
-QRegister(Words, "w", 0x16);
-QRegister(Chars, "C", 0x17);
-QRegister(Lines, "L", 0x18);
-QRegister(Match, "M", 0x19);
-QRegister(Matches, "m", 0x1A);
-QRegister(ToString, "s", 0x1B);
-QRegister(FormatX, "Fₓ", 0x1C);
-QRegister(Format1, "F₁", 0x1D);
-QRegister(Format2, "F₂", 0x1E);
-QRegister(Format3, "F₃", 0x1F);
+QRegister("Print", Print, "P", 0x10);
+QRegister("Write", Write, "W", 0x11);
+QRegister("Replace", Replace, "R", 0x12);
+QRegister("Split", Split, "S", 0x13);
+QRegister("Join", Join, "J", 0x14);
+QRegister("JoinBy", JoinBy, "j", 0x15);
+QRegister("Words", Words, "w", 0x16);
+QRegister("Chars", Chars, "C", 0x17);
+QRegister("Lines", Lines, "L", 0x18);
+QRegister("Match", Match, "M", 0x19);
+QRegister("Matches", Matches, "m", 0x1A);
+QRegister("ToString", ToString, "s", 0x1B);
+QRegister("FormatX", FormatX, "Fₓ", 0x1C);
+QRegister("Format1", Format1, "F₁", 0x1D);
+QRegister("Format2", Format2, "F₂", 0x1E);
+QRegister("Format3", Format3, "F₃", 0x1F);
