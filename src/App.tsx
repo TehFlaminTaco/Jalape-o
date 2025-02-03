@@ -221,7 +221,7 @@ function CopyCMC(){
   let hex = [...lastByteCode].map(c=>(c < 16 ? '0' : '') + c.toString(16).toUpperCase()).join(' ');
   let code = ToCharacters(lastByteCode);
 
-  let copyText = `[Jalapeño](https://www.github.com/TehFlaminTaco/Jalapeno), ${lastByteCode.length} bytes. [\`${code}\`](${window.location}) (Hex: \`${hex}\`)`;
+  let copyText = `[Jalapeño](https://www.github.com/TehFlaminTaco/Jalape-o), ${lastByteCode.length} bytes. [\`${code}\`](${window.location}) (Hex: \`${hex}\`)`;
   navigator.clipboard.writeText(copyText);
 }
 
@@ -229,7 +229,7 @@ function CopyCodeGolf() {
   let hex = RenderHex(lastByteCode).replaceAll(/^/g, "\t");
   let code = ToCharacters(lastByteCode);
 
-  let s = `# [Jalapeño](https://www.github.com/TehFlaminTaco/Jalapeno), ${lastByteCode.length} bytes\n`
+  let s = `# [Jalapeño](https://www.github.com/TehFlaminTaco/Jalape-o), ${lastByteCode.length} bytes\n`
   s += `    ${code}\n\n`
   s += `## Hex-Dump of Bytecode\n`
   s += `${hex}\n\n[Try it Online!](${window.location})`
