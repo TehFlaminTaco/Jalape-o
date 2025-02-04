@@ -30,12 +30,34 @@ import ace from "react-ace";
 import "ace-builds/src-noconflict/ext-language_tools"
 import { Metas, ValidateMeta } from "./Meta";
 
-const VERSION = 3;
+import ByteRunner from "./RunnerWorker.tsx?worker";
+import { RunData, TalkData } from "./RunData";
+
+const VERSION = 4;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";
+let CurWorker: Worker | undefined = undefined;
+let WorkerLocked: boolean = true;
 
 function runBytecode(byteCode: Uint8Array){
+  if(WorkerLocked || CurWorker === undefined){
+    CurWorker?.terminate(); // Kill any currently living workers.
+    CurWorker = new ByteRunner();
+    CurWorker!.onmessage = (event: MessageEvent<TalkData>)=> {
+      switch(event.data[0]){
+        case 'lock':
+          WorkerLocked = true; break;
+        case 'unlock':
+          WorkerLocked = false; break;
+        case 'output':
+          document.getElementById(
+            "output"
+          )!.textContent = event.data[1];
+          break;
+      }
+    }
+  }
   lastByteCode = byteCode;
   // Try to parse inputfield as a json object (implicitly wrapped in [])
   let inputText = (document.getElementById("inputfield") as HTMLTextAreaElement)
@@ -50,19 +72,11 @@ function runBytecode(byteCode: Uint8Array){
     )!.textContent = `Invalid input, must be in JSON format separated by commas`;
     return;
   }
-  try {
-    let pLinks = ParseAsPseudoLinks(byteCode);
-    pLinks = TrimPseudoLinks(pLinks);
-    let compiled = Compile(pLinks);
-    Global.Output = "";
-    let res = Evaluate(compiled, Global.Inputs[0]);
-    if (res === undefined) res = "";
-    document.getElementById("output")!.textContent = `${
-      Global.Output
-    }${AsString(res)}`;
-  }catch(e){
-    document.getElementById("output")!.textContent = `${e}`;
-  }
+  WorkerLocked = true;
+  CurWorker!.postMessage([
+    Global.Inputs,
+    byteCode
+  ] as RunData)
 }
 
 function reRunBytecode(){
@@ -149,7 +163,7 @@ function changeInput(){
 }
 
 function CheckForUpdates(): string {
-  fetch(`../version.txt`).then(c=>c.text()).then(c=>{
+  fetch(`../version.txt`, {cache: "no-store"}).then(c=>c.text()).then(c=>{
     if(+c > VERSION){
       document.querySelector(".middle")!.innerHTML = `v${VERSION} - A newer version is available <a href='../${VERSION}'>HERE</a>`
     }else{
