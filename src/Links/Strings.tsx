@@ -1,7 +1,7 @@
 import { Global, WithInputs } from "../GlobalState";
 import { VectorizedOver } from "../Helpers";
 import { QRegister } from "../Registry";
-import { AsList, AsString, Link, Value, Vectorized } from "../Types";
+import { AsList, AsNumber, AsString, Link, Value, Vectorized } from "../Types";
 
 function Print(left: Value): Value {
   Global.Output += `${AsString(left)}\n`;
@@ -63,6 +63,14 @@ function Lines(left: Value): Value {
       .split("\n")
       .map((x) => x as Value)
   );
+}
+
+function JoinWords(left: Value): Value {
+  return AsList(left).join(" ");
+}
+
+function JoinLines(left: Value): Value {
+  return AsList(left).join("\n");
 }
 
 function Match(left: Value, right: Link): Value {
@@ -128,6 +136,34 @@ function Format3(left: Value, child1: Link, child2: Link, child3: Link){
   ]));
 }
 
+function Byte(left: Value): Value {
+  return new Vectorized(left).get(left=>{
+      left = AsString(left);
+      if(left.length === 0)
+        return undefined;
+      if(left.length === 1)
+        return left.charCodeAt(0);
+      return left.split('').map(c=>c.charCodeAt(0));
+  })
+}
+
+function Char(left: Value): Value {
+  return new Vectorized(left).get(left=>{
+    left = AsNumber(left);
+    if(left !== left) return '';
+    return String.fromCharCode(left);
+  })
+}
+
+function Lower(left: Value): Value {
+  return new Vectorized(left).get(left=>AsString(left).toLowerCase());
+}
+function Upper(left: Value): Value {
+  return new Vectorized(left).get(left=>AsString(left).toUpperCase());
+}
+function CapitalizeWords(left: Value): Value {
+  return new Vectorized(left).get(left=>AsString(left).capitalizeWords());
+}
 
 QRegister("Print", Print, "P", 0x10);
 QRegister("Write", Write, "W", 0x11);
@@ -135,13 +171,20 @@ QRegister("Replace", Replace, "R", 0x12);
 QRegister("Split", Split, "S", 0x13);
 QRegister("Join", Join, "J", 0x14);
 QRegister("JoinBy", JoinBy, "j", 0x15);
-QRegister("Words", Words, "w", 0x16);
-QRegister("Chars", Chars, "C", 0x17);
-QRegister("Lines", Lines, "L", 0x18);
-QRegister("Match", Match, "M", 0x19);
-QRegister("Matches", Matches, "m", 0x1A);
-QRegister("ToString", ToString, "s", 0x1B);
-QRegister("FormatX", FormatX, "Fₓ", 0x1C);
-QRegister("Format1", Format1, "F₁", 0x1D);
-QRegister("Format2", Format2, "F₂", 0x1E);
-QRegister("Format3", Format3, "F₃", 0x1F);
+QRegister("JoinWords", JoinWords, "w₋", 0x16);
+QRegister("JoinLines", JoinLines, "L₋", 0x17);
+QRegister("Words", Words, "w", 0x18);
+QRegister("Chars", Chars, "C", 0x19);
+QRegister("Lines", Lines, "L", 0x1A);
+QRegister("Match", Match, "M", 0x1B);
+QRegister("Matches", Matches, "m", 0x1C);
+QRegister("ToString", ToString, "s", 0x1D);
+QRegister("Format1", Format1, "F₁", 0x01);
+QRegister("Format2", Format2, "F₂", 0x02);
+QRegister("Format3", Format3, "F₃", 0x03);
+QRegister("FormatX", FormatX, "Fₓ", 0x04);
+QRegister("Byte", Byte, "B", 0x1E);
+QRegister("Char", Char, "B₋", 0x1F);
+QRegister("Upper", Upper, "U", 0x2B);
+QRegister("Lower", Lower, "U₋", 0x2C);
+QRegister("CapitalizeWords", CapitalizeWords, "T", 0x2D);

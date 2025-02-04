@@ -165,3 +165,8 @@ iframe {
   font-weight: lighter;
   padding-top: 4px;
 }
+
+.singlecharacter {
+  display: inline-block;
+  width: 1ch;
+}

@@ -1,9 +1,14 @@
 import { Global, WithInputs } from "../GlobalState";
 import { QRegister } from "../Registry";
-import { AsList, AsNumber, Link, Value, Vectorized } from "../Types";
+import { AsList, AsNumber, Link, Truthy, Value, Vectorized } from "../Types";
+import { _Compare, _Equal } from "./Math";
 
 function Map(left: Value, right: Link): Value {
   return AsList(left).map((x) => right.Call(x));
+}
+
+function DeepMap(left: Value, right: Link): Value {
+  return new Vectorized(left).get(v=>right.Call(v));
 }
 
 function Filter(left: Value, right: Link): Value {
@@ -68,7 +73,7 @@ function FirstWhere(left: Value, predicate: Link): Value {
   if (typeof left === "string") left = left.split('');
   left = AsList(left);
   for(let i=0; i < left.length; i++)
-    if(predicate.Call(left[i]))
+    if(Truthy(predicate.Call(left[i])))
       return left[i];
   return undefined;
 }
@@ -77,7 +82,7 @@ function FirstIndexOf(left: Value, predicate: Link): Value {
   if (typeof left === "string") left = left.split('');
   left = AsList(left);
   for(let i=0; i < left.length; i++)
-    if(predicate.Call(left[i]))
+    if(Truthy(predicate.Call(left[i])))
       return i;
   return -1;
 }
@@ -99,7 +104,7 @@ function LastWhere(left: Value, predicate: Link): Value {
   if (typeof left === "string") left = left.split('');
   left = AsList(left);
   for(let i=left.length - 1; i >= 0; i--)
-    if(predicate.Call(left[i]))
+    if(Truthy(predicate.Call(left[i])))
       return left[i];
   return undefined;
 }
@@ -108,7 +113,7 @@ function LastIndexOf(left: Value, predicate: Link): Value {
   if (typeof left === "string") left = left.split('');
   left = AsList(left);
   for(let i=left.length - 1; i >= 0; i--)
-    if(predicate.Call(left[i]))
+    if(Truthy(predicate.Call(left[i])))
       return i;
   return -1;
 }
@@ -138,7 +143,7 @@ function Slice(left: Value, start: Link, length: Link): Value {
 function Sort(left: Value): Value {
   return AsList(left)
     .concat()
-    .sort((a, b) => AsNumber(a) - AsNumber(b));
+    .sort((a, b) => _Compare(a,b));
 }
 
 function SortBy(left: Value, right: Link): Value {
@@ -152,12 +157,14 @@ function SortBy(left: Value, right: Link): Value {
 }
 
 function Unique(left: Value): Value {
-  return AsList(left).filter((v, i, a) => a.indexOf(v) === i);
+  return AsList(left).filter(
+    (v, i, a) => a.findIndex((x) => _Equal(x, v)) === i
+  );
 }
 
 function UniqueBy(left: Value, right: Link): Value {
   return AsList(left).filter(
-    (v, i, a) => a.findIndex((x) => right.Call(x) === right.Call(v)) === i
+    (v, i, a) => a.findIndex((x) => _Equal(right.Call(x), right.Call(v))) === i
   );
 }
 
@@ -236,6 +243,135 @@ function ProductBy(left: Value, right: Link): Value {
   return Product(AsList(left).map((x) => right.Call(x)));
 }
 
+function Union(left: Value, r: Link): Value {
+  let right = AsList(r.Call(Global.Inputs[0]));
+  left = AsList(left).concat();
+  for(let e of right){
+    if(left.some((v:Value)=>_Equal(e,v))) continue;
+    left.push(e);
+  }
+  return left;
+}
+
+function Intersect(left: Value, r: Link): Value {
+  let right = AsList(r.Call(Global.Inputs[0]));
+  let i = [];
+  for(let e of AsList(left)){
+    if(!right.some((v:Value)=>_Equal(e,v))) continue;
+    i.push(e);
+  }
+  return i;
+}
+
+function Max(left: Value): Value {
+  left = AsList(left);
+  if(left.length === 0)
+    return undefined;
+  let best = left[0];
+  for(let i=1; i < left.length; i++){
+    if (_Compare(best, left[i]) < 0){
+      best = left[i]
+    }
+  }
+  return best;
+}
+
+function MaxBy(left: Value, selector: Link): Value {
+  left = AsList(left);
+  if(left.length === 0)
+    return undefined;
+  let best = left[0];
+  let bestValue = selector.Call(best);
+  for(let i=1; i < left.length; i++){
+    let lValue = selector.Call(left[i]);
+    if (_Compare(bestValue, lValue) < 0){
+      best = left[i];
+      bestValue = lValue;
+    }
+  }
+  return best;
+}
+
+function Min(left: Value): Value {
+  left = AsList(left);
+  if(left.length === 0)
+    return undefined;
+  let best = left[0];
+  for(let i=1; i < left.length; i++){
+    if (_Compare(best, left[i]) > 0){
+      best = left[i]
+    }
+  }
+  return best;
+}
+
+function MinBy(left: Value, selector: Link): Value {
+  left = AsList(left);
+  if(left.length === 0)
+    return undefined;
+  let best = left[0];
+  let bestValue = selector.Call(best);
+  for(let i=1; i < left.length; i++){
+    let lValue = selector.Call(left[i]);
+    if (_Compare(bestValue, lValue) > 0){
+      best = left[i];
+      bestValue = lValue;
+    }
+  }
+  return best;
+}
+
+function GroupBy(left: Value, selector: Link): Value {
+  let groups: [Value, Value[]][] = [];
+  for(let e of AsList(left)) {
+    let key = selector.Call(e);
+    let g: Value[]|undefined = undefined;
+    for(let group of groups){
+      if(_Equal(key, group[0])){
+        g = group[1];
+        break;
+      }
+    }
+    if(!g){
+      groups.push([key, g=[]])
+    }
+    g.push(e);
+  }
+  return groups.map(c=>c[1]);
+}
+
+function SplitBetween(left: Value, predicate: Link): Value {
+  let l = AsList(left);
+  if(l.length === 0) return [];
+  let last = l[0];
+  let cur: Value[] = [l[0]];
+  let lists: Value[][] = [cur];
+  for(let i=1; i < l.length; i++){
+    if(WithInputs([last, l[i]], ()=>Truthy(predicate.Call(last)))){
+      lists.push(cur = []);
+    }
+    cur.push(l[i]);
+    last = l[i];
+  }
+  return lists;
+}
+
+function SplitAt(left: Value, predicate: Link): Value {
+  let l = AsList(left);
+  if(l.length === 0) return [];
+  let cur: Value[] = [];
+  let lists: Value[][] = [cur];
+  for(let i=0; i < l.length; i++){
+    if(Truthy(predicate.Call(l[i]))){
+      lists.push(cur = []);
+    }else{
+      cur.push(l[i]);
+    }
+  }
+  return lists;
+}
+
+
 /*
     List Comprehension functions are mapped to bytes 0xD0...
     They should use symbols that are list related, or represent their function.
@@ -271,3 +407,13 @@ QRegister("Sum", Sum, "Σ", 0xe9);
 QRegister("SumBy", SumBy, "Σₓ", 0xea);
 QRegister("Product", Product, "Π", 0xeb);
 QRegister("ProductBy", ProductBy, "Πₓ", 0xec);
+QRegister("DeepMap", DeepMap, "↦ₓ", 0xed);
+QRegister("Union", Union, "∪", 0xee);
+QRegister("Intersect", Intersect, "∩", 0xef);
+QRegister("Max", Max, '⇈', 0xf0);
+QRegister("MaxBy", MaxBy, '⇈ₓ', 0xf1);
+QRegister("Min", Min, '⇊', 0xf2);
+QRegister("MinBy", MinBy, '⇊ₓ', 0xf3);
+QRegister("GroupBy", GroupBy, "G", 0xf4);
+QRegister("SplitBetween", SplitBetween, "⇋", 0xf5)
+QRegister("SplitAt", SplitAt, "⇋₁", 0xf6)

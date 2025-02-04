@@ -20,10 +20,10 @@ export class Metas {
 }
 
 /* 0 */ Metas.set("noop", "any: noop", "(left: any).noop()\n\nReturns nothing")
-/* 1 */
-/* 2 */
-/* 3 */
-/* 4 */
+/* 1 */ Metas.set("format1", "stringFormat: format1 arg0", "(stringFormat: string).format1(arg0: string)=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
+/* 2 */ Metas.set("format2", "stringFormat: format2 arg0, arg1", "(stringFormat: string).format2(arg0: string, arg1: string)=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
+/* 3 */ Metas.set("format3", "stringFormat: format3 arg0, arg1, arg2", "(stringFormat: string).format3(arg0: string, arg1: string, arg2: string)=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
+/* 4 */ Metas.set("formatx", "stringFormat: formatx arguments", "(stringFormat: string).formatx(arguments: string[])=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
 /* 5 */
 /* 6 */
 /* 7 */
@@ -41,30 +41,30 @@ export class Metas {
 /* 13 */ Metas.set("split", "left: split deliminator", "(left: string).split(deliminator: string)=>string[]\nVectorized\n\nSplits the left string by the deliminator RegExp.")
 /* 14 */ Metas.set("join", "left: join", "(left: string[]).join()=>string\n\nConcatenates all the values of left together")
 /* 15 */ Metas.set("joinby", "left: joinby deliminator", "(left: string[]).joinby(deliminator)=>string\n\nConcatenates all the values of left together by a deliminator")
-/* 16 */ Metas.set("words", "left: words", "(left: string).words()=>string[]\nVectorized\n\nSplit the text left by spaces")
-/* 17 */ Metas.set("chars", "left: chars", "(left: string).chars()=>string[]\nVectorized\n\nSplit the text left into individual characters")
-/* 18 */ Metas.set("lines", "left: lines", "(left: string).lines()=>string[]\nVectorized\n\nSplit the text left by newlines")
-/* 19 */ Metas.set("match", "haystack: match needle", "(haystack: string).match(needle: string)=>string|string[]\nVectorized\n\nReturns the first instance of the matched RegExp needle in haystack. If needle has groups, returns an array.")
-/* 1a */ Metas.set("matches", "haystack: matches needle", "(haystack: string).matches(needle: string)=>(string|string[])[]\nVectorized\n\nReturns all instances of the matched RegExp needle in haystack. If needel has groups, each instance returns as an array.")
-/* 1b */ Metas.set("tostring", "left: tostring", "(left: any).tostring()=>string\n\nStringifies the left value.")
-/* 1c */ Metas.set("formatx", "stringFormat: formatx arguments", "(stringFormat: string).formatx(arguments: string[])=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
-/* 1d */ Metas.set("format1", "stringFormat: format1 arg0", "(stringFormat: string).format1(arg0: string)=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
-/* 1e */ Metas.set("format2", "stringFormat: format2 arg0, arg1", "(stringFormat: string).format2(arg0: string, arg1: string)=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
-/* 1f */ Metas.set("format3", "stringFormat: format3 arg0, arg1, arg2", "(stringFormat: string).format3(arg0: string, arg1: string, arg2: string)=>string\nVectorized\n\nReturns stringFormat with all instances of %x replaced with the respective argument index.")
+/* 16 */ Metas.set("joinwords", "any: joinwords", "(left: any).joinwords()\n\n")
+/* 17 */ Metas.set("joinlines", "any: joinlines", "(left: any).joinlines()\n\n")
+/* 18 */ Metas.set("words", "left: words", "(left: string).words()=>string[]\nVectorized\n\nSplit the text left by spaces")
+/* 19 */ Metas.set("chars", "left: chars", "(left: string).chars()=>string[]\nVectorized\n\nSplit the text left into individual characters")
+/* 1a */ Metas.set("lines", "left: lines", "(left: string).lines()=>string[]\nVectorized\n\nSplit the text left by newlines")
+/* 1b */ Metas.set("match", "haystack: match needle", "(haystack: string).match(needle: string)=>string|string[]\nVectorized\n\nReturns the first instance of the matched RegExp needle in haystack. If needle has groups, returns an array.")
+/* 1c */ Metas.set("matches", "haystack: matches needle", "(haystack: string).matches(needle: string)=>(string|string[])[]\nVectorized\n\nReturns all instances of the matched RegExp needle in haystack. If needel has groups, each instance returns as an array.")
+/* 1d */ Metas.set("tostring", "left: tostring", "(left: any).tostring()=>string\n\nStringifies the left value.")
+/* 1e */ Metas.set("byte", "character: byte", "(character: string).byte()=>number|number[]\nVectorized\n\nReturns the character code of 'character'. If 'character' is longer than 1, returns an array")
+/* 1f */ Metas.set("char", "ordinal: char", "(ordinal: number).char()=>string\nVectorized\nReturns the string represented by character code 'ordinal'")
 /* 20 */ Metas.set("bytestring", "bytestring", "bytestring\nMeta\n\nUsed to define a string of bytes.")
 /* 21 */ Metas.set("singletonbyte", "singletonbyte", "singletonbyte\nMeta\n\nUsed to reference a single byte")
 /* 22 */ Metas.set("smazstring", "smazstring", "smazstring\nMeta\n\nUsed to define a string of compressed bytes")
 /* 23 */ Metas.set("singletonsmaz", "singletonsmaz", "singletonsmaz\nMeta\nUsed to reference a single compressed byte")
 /* 24 */ Metas.set("emptystring", "emptystring", "emptystring()=>string\n\nReturns an empty string.")
-/* 25 */ Metas.set("space", "left: space", "space()=>string\n\nReturns a single space")
-/* 26 */ Metas.set("pair", "left: pair any", "(left: any[]).pair(right: any)=>any[]\n\nConcatenates right to the end of left. If left isn't an array yet, boxes it.")
-/* 27 */ Metas.set("emptylist", "left: emptylist", "emptylist()=>[]\n\nReturns an empty list.")
-/* 28 */
-/* 29 */
-/* 2a */
-/* 2b */
-/* 2c */
-/* 2d */
+/* 25 */ Metas.set("space", "space", "space()=>string\n\nReturns a single space")
+/* 26 */ Metas.set("capitalalphabet", "capitalalphabet", "capitalalphabet()=>\n\nReturns the entire alphabet in uppercase")
+/* 27 */ Metas.set("lowercasealphabet", "lowercasealphabet", "lowercasealphabet()=>\n\nReturns the entire alphabet in lowercase")
+/* 28 */ Metas.set("printableascii", "printableascii", "printableascii()=>\n\nReturns the entire printable ascii range")
+/* 29 */ Metas.set("pair", "left: pair any", "(left: any[]).pair(right: any)=>any[]\n\nConcatenates right to the end of left. If left isn't an array yet, boxes it.")
+/* 2a */ Metas.set("emptylist", "left: emptylist", "emptylist()=>[]\n\nReturns an empty list.")
+/* 2b */ Metas.set("upper", "any: upper", "(left: any).upper()\n\n")
+/* 2c */ Metas.set("lower", "any: lower", "(left: any).lower()\n\n")
+/* 2d */ Metas.set("capitalizewords", "any: capitalizewords", "(left: any).capitalizewords()\n\n")
 /* 2e */ Metas.set("range", "start: range end", "(start: any).range(end: any)=>any\n\nIf start and end are numbers, returns a list of numbers from start to end inclusive.\nIf start or end are lists, concatenates the lists together\nIf start or end are strings, concatenates the strings together")
 /* 2f */ Metas.set("box", "box value", "box(value: any)=>any[]\n\nReturns a list contaning only value.")
 /* 30 */ Metas.set("zero", "zero", "zero()=>number\n\nReturns the constant number zero")
@@ -84,8 +84,8 @@ export class Metas {
 /* 3e */ Metas.set("integerconstant", "integerconstant", "integerconstant\nMeta\n\nUsed to denote an integer constant.")
 /* 3f */ Metas.set("floatconstant", "floatconstant", "floatconstant\nMeta\n\nUsed to denote a floatingpoint constant.")
 /* 40 */ Metas.set("negative", "negative value", "negative(value: any)=>any\n\nIf value is a list, returns 0-value.\nIf value is a list or a string, reverses it.")
-/* 41 */
-/* 42 */
+/* 41 */ Metas.set("pi", "any: pi", "(left: any).pi()\n\n")
+/* 42 */ Metas.set("e", "any: e", "(left: any).e()\n\n")
 /* 43 */
 /* 44 */
 /* 45 */
@@ -114,32 +114,32 @@ export class Metas {
 /* 5c */ Metas.set("less", "left: less any", "(left: any).less(right: any)=>number\n\nReturns if left is smaller than right. Lexigraphically for lists or strings.")
 /* 5d */ Metas.set("greaterequal", "left: greaterequal any", "(left: any).greaterequal(right: any)=>number\n\nReturns if left is larger than or equal to right. Lexigraphically for lists or strings.")
 /* 5e */ Metas.set("lessequal", "left: lessequal any", "(left: any).lessequal(right: any)=>number\n\nReturns if left is smaller than or equal to right. Lexigraphically for lists or strings.")
-/* 5f */ Metas.set("compare", "left: compare any", "(left: any).compare(right: any)=>number\n\nReturns -1 if left is less than right, 1 if left is greater than right, or 0 otherwise.")
+/* 5f */ Metas.set("compare", "left: compare right", "(left: any).compare(right: any)=>number\n\nReturns -1 if left is less than right, 1 if left is greater than right, or 0 otherwise.")
 /* 60 */ Metas.set("sqrt", "n: sqrt", "(n: number).sqrt()=>number\nVectorized\n\nReturns the square root of n")
 /* 61 */ Metas.set("square", "left: square", "(left: number).square()\nVectorized\n\nReturns the value of n^3")
-/* 62 */ Metas.set("cubed", "n: cubed", "(n: number).cubed() => number\nVectorized\n\nReturns the value of n^3")
-/* 63 */ Metas.set("sign", "n: sign", "(n: any).sign()\nVectorized\n\nReturns -1 if n is less than 0, 1 if n is greater than 0, or 0 otherwise.")
-/* 64 */ Metas.set("factorial", "n: factorial", "(n: number).factorial()\nVectorized\n\nReturns the product of every positive integer lessthan and including n")
-/* 65 */ Metas.set("bitwiseor", "left: bitwiseor right", "(left: number).bitwiseor(right: number)\nVectorized\n\nReturns the value of left | right")
-/* 66 */ Metas.set("bitwiseand", "left: bitwiseand right", "(left: number).bitwiseand(right: number)\nVectorized\n\nReturns the value of left & right")
-/* 67 */ Metas.set("bitwisexor", "left: bitwisexor right", "(left: number).bitwisexor(right: number)\nVectorized\n\nReturns the value of left xor right")
-/* 68 */ Metas.set("bitshiftleft", "left: bitshiftleft right", "(left: number).bitshiftleft(right: number)\nVectorized\n\nReturns the value of left << right")
-/* 69 */ Metas.set("bitshiftright", "left: bitshiftright right", "(left: number).bitshiftright(right: number)\nVectorized\n\nReturns the value of left >> right")
-/* 6a */
-/* 6b */
-/* 6c */
-/* 6d */
-/* 6e */
-/* 6f */
-/* 70 */
-/* 71 */
-/* 72 */
-/* 73 */
-/* 74 */
-/* 75 */
-/* 76 */
-/* 77 */
-/* 78 */
+/* 62 */ Metas.set("cubed", "n: cubed", "(n: number).cubed()=>number\nVectorized\n\nReturns the value of n^3")
+/* 63 */ Metas.set("sign", "n: sign", "(n: any).sign()=>numer\nVectorized\n\nReturns -1 if n is less than 0, 1 if n is greater than 0, or 0 otherwise.")
+/* 64 */ Metas.set("factorial", "n: factorial", "(n: number).factorial()=>numernVectorized\n\nReturns the product of every positive integer lessthan and including n")
+/* 65 */ Metas.set("bitwiseor", "left: bitwiseor right", "(left: number).bitwiseor(right: number)=>numer\nVectorized\n\nReturns the value of left | right")
+/* 66 */ Metas.set("bitwiseand", "left: bitwiseand right", "(left: number).bitwiseand(right: number)=>numer\nVectorized\n\nReturns the value of left & right")
+/* 67 */ Metas.set("bitwisexor", "left: bitwisexor right", "(left: number).bitwisexor(right: number)=>numernVectorized\n\nReturns the value of left xor right")
+/* 68 */ Metas.set("bitshiftleft", "left: bitshiftleft right", "(left: number).bitshiftleft(right: number)=>numer\nVectorized\n\nReturns the value of left << right")
+/* 69 */ Metas.set("bitshiftright", "left: bitshiftright right", "(left: number).bitshiftright(right: number)=>numer\nVectorized\n\nReturns the value of left >> right")
+/* 6a */ Metas.set("randomdecimal", "randomdecimal", "randomdecimal()=>number\n\nReturns a random value between [0,1)")
+/* 6b */ Metas.set("randominteger", "max: randominteger", "(max: number|any[]).randominteger()=>number\n\nReturns a random integer between [0,max). If Max is an array, returns a random element from it instead.")
+/* 6c */ Metas.set("randomfloat", "max: randomfloat", "(max: number|any[]).randomfloat()=>number\n\nReturns a random floating point number between [0,max). If Max is an array, returns a random element from it instead.")
+/* 6d */ Metas.set("loge", "n: loge", "(n: number).loge()=>number\nVectorized\n\nReturns the value of n to the natural log e")
+/* 6e */ Metas.set("log", "n: log base", "(n: number).log(base: number)=>number\nVectorized\n\nReturns the value of n to the log base")
+/* 6f */ Metas.set("primefactors", "n: primefactors", "(n: number).primefactors()=>number\nVectorized\n\nReturns all prime factors of n")
+/* 70 */ Metas.set("factors", "n: factors", "(n: number).factors()=>number\nVectorized\n\nReturns all factors of n including 1 and n")
+/* 71 */ Metas.set("isprime", "n: isprime", "(n: number).isprime()=>number\nVectorized\n\nReturns 1 if n is prime, 0 otherwise")
+/* 72 */ Metas.set("sin", "n: sin", "(n: number).sin()\nVectorized\n\nReturns the result of standard trigonometry sin(n)")
+/* 73 */ Metas.set("cos", "n: cos", "(n: number).cos()\nVectorized\n\nReturns the result of standard trigonometry cos(n)")
+/* 74 */ Metas.set("tan", "n: tan", "(n: number).tan()\nVectorized\n\nReturns the result of standard trigonometry tan(n)")
+/* 75 */ Metas.set("asin", "n: asin", "(n: number).asin()\nVectorized\n\nReturns the result of standard trigonometry asin(n)")
+/* 76 */ Metas.set("acos", "n: acos", "(n: number).acos()\nVectorized\n\nReturns the result of standard trigonometry acos(n)")
+/* 77 */ Metas.set("atan", "n: atan", "(n: number).atan()\nVectorized\n\nReturns the result of standard trigonometry atan(n)")
+/* 78 */ Metas.set("atan2", "n: atan2", "(y: number).atan2(x: number)\nVectorized\n\nReturns the result of standard trigonometry atan2(y, x)")
 /* 79 */
 /* 7a */
 /* 7b */
@@ -147,14 +147,14 @@ export class Metas {
 /* 7d */
 /* 7e */
 /* 7f */
-/* 80 */
-/* 81 */
-/* 82 */
-/* 83 */
-/* 84 */
-/* 85 */
-/* 86 */
-/* 87 */
+/* 80 */ Metas.set("store0", "value: store0", "(value: any).store0()=>any\n\nStores value into box[0] and returns it")
+/* 81 */ Metas.set("store1", "value: store1", "(value: any).store1()=>any\n\nStores value into box[1] and returns it")
+/* 82 */ Metas.set("store2", "value: store2", "(value: any).store2()=>any\n\nStores value into box[2] and returns it")
+/* 83 */ Metas.set("storex", "value: storex box", "(value: any).storex(box: number)=>any\nVectorized\n\nStores value into box[box] and returns it")
+/* 84 */ Metas.set("load0", "load0", "load0()\n\nReturns the value at box[0]")
+/* 85 */ Metas.set("load1", "load1", "load1()\n\nReturns the value at box[1]")
+/* 86 */ Metas.set("load2", "load2", "load2()\n\nReturns the value at box[2]")
+/* 87 */ Metas.set("loadx", "loadx box", "loadx(box: number)\nVectorized\n\nReturns the value at box[box]")
 /* 88 */
 /* 89 */
 /* 8a */
@@ -179,9 +179,9 @@ export class Metas {
 /* 9d */
 /* 9e */
 /* 9f */
-/* a0 */
-/* a1 */
-/* a2 */
+/* a0 */ Metas.set("if", "condition: if then", "(condition: any).if(then: ()=>any)\n\nIf condition is truthy, returns the result of then, otherwise, returns condition.")
+/* a1 */ Metas.set("ifelse", "condition: ifelse then, else", "(condition: any).ifelse(then: ()=>any, else: ()=>any)\n\nif condition is truthy, retursn the result of then, otherwise returns the result of else.")
+/* a2 */ Metas.set("while", "initial: while condition, body", "(initial: any).while(condition: (any)=>any, body: (any)=>any)\n\nWhile the result of condition(initial) is truthy, sets initial to the result of body(initial). Returns the current value of initial.")
 /* a3 */
 /* a4 */
 /* a5 */
@@ -229,10 +229,10 @@ export class Metas {
 /* cf */
 /* d0 */ Metas.set("map", "list: map selector", "(list: any[]).map(selector: (any)=>any)=>any[]\n\nReturns a new version of list with all values mutated by selector")
 /* d1 */ Metas.set("filter", "list: filter predicate", "(list any[]).filter(predicate: (any)=>any)=>any[]\n\nReturns a new version of list with only values in which predicate returns truthy")
-/* d2 */ Metas.set("reduce", "list: reduce any", "(list: any[]).reduce(accumulator: (any, any)=>any)=>any[]\n\nReturns the result of repeated accumulation across list. The left input to accumulator is the result of the last, or the first value initially.")
-/* d3 */ Metas.set("reduceinitial", "list: reduceinitial any, any", "(list: any[]).reduce(accumulator: (any, any)=>any, initial: any)=>any\n\nReturns the result of repeated accumulation across list. The left input to accumulator is the result of the last, or initial inially.")
-/* d4 */ Metas.set("fold", "list: fold any", "(list: any[]).fold(accumulator: (any, any)=>any)=>any[]\n\nReturns a new version of list from running accumulator on each adjacant pair of elements.")
-/* d5 */ Metas.set("foldinitial", "list: foldinitial any, any", "(list: any[]).foldinitial(accumulator: (any, any)=>any, initial: any)=>any[]\n\nReturns a new version of list from running accumulator on each adjacant pair of elements with initial implicitly prepended.")
+/* d2 */ Metas.set("reduce", "list: reduce accumulator", "(list: any[]).reduce(accumulator: (any, any)=>any)=>any[]\n\nReturns the result of repeated accumulation across list. The left input to accumulator is the result of the last, or the first value initially.")
+/* d3 */ Metas.set("reduceinitial", "list: reduceinitial accumulator, initial", "(list: any[]).reduce(accumulator: (any, any)=>any, initial: any)=>any\n\nReturns the result of repeated accumulation across list. The left input to accumulator is the result of the last, or initial inially.")
+/* d4 */ Metas.set("fold", "list: fold accumulator", "(list: any[]).fold(accumulator: (any, any)=>any)=>any[]\n\nReturns a new version of list from running accumulator on each adjacant pair of elements.")
+/* d5 */ Metas.set("foldinitial", "list: foldinitial accumulator, initial", "(list: any[]).foldinitial(accumulator: (any, any)=>any, initial: any)=>any[]\n\nReturns a new version of list from running accumulator on each adjacant pair of elements with initial implicitly prepended.")
 /* d6 */ Metas.set("length", "list: length", "(list: any[]|string).length()=>number\n\nReturns the length of list")
 /* d7 */ Metas.set("reverse", "list: reverse", "(list: any[]|string).reverse()=>any[]|string\n\nReturns the reversed version of list")
 /* d8 */ Metas.set("first", "list: first", "(list: any[]).first()=>any\n\nReturns the first element of list")
@@ -256,16 +256,16 @@ export class Metas {
 /* ea */ Metas.set("sumby", "list: sumby any", "(list: any[]).sumby(selector: (any)=>number)\n\nReturns the sum of the elements of list mapped by selector")
 /* eb */ Metas.set("product", "list: product", "(list: any[]).product()\n\nReturns the product of list")
 /* ec */ Metas.set("productby", "list: productby any", "(list: any[]).productby(arg0)\n\nReturns the product of list mapped by selector")
-/* ed */
-/* ee */
-/* ef */
-/* f0 */
-/* f1 */
-/* f2 */
-/* f3 */
-/* f4 */
-/* f5 */
-/* f6 */
+/* ed */ Metas.set("deepmap", "list: deepmap selector", "(list: any[]).deepmap(selector: (any)=>any)=>any\n\nReturns a new list modified by selector. Sublists are recursed into.")
+/* ee */ Metas.set("union", "left: union right", "(left: any[]).union(right: any[])=>any[]\n\nReturns a list containing all elements of left, and elements of right which do not yet appear in the list")
+/* ef */ Metas.set("intersect", "left: intersect right", "(left: any[]).intersect(right: any[])=>any[]\n\nReturns all elements of left that appear in right")
+/* f0 */ Metas.set("max", "list: max", "(list: any[]).max()\n\nReturns the maximum lexigraphical value of list.")
+/* f1 */ Metas.set("maxby", "list: maxby selector", "(list: any[]).maxby(selector: (any)=>any)\n\nReturns the maximum lexigraphical value of list by selector")
+/* f2 */ Metas.set("min", "list: min", "(list: any[]).min()\n\nReturns the minimum lexigraphical value of list.")
+/* f3 */ Metas.set("minby", "list: minby selector", "(list: any[]).minby(selector: (any)=>any)\n\nReturns the minimum lexigraphical value of list by selector")
+/* f4 */ Metas.set("groupby", "list: groupby selector", "(list: any[]).groupby(selector: (any)=>any)\n\nReturns list split into sublists in which selector(element) is equal.")
+/* f5 */ Metas.set("splitbetween", "list: splitbetween predicate", "(list: any[]).splitbetween(predicate: (any,any)=>any)\n\nReturns list split between any two elements such predicate(left,right) is truthy")
+/* f6 */ Metas.set("splitat", "list: splitat predicate", "(list: any[]).splitat(predicate: (any)=>any)\n\nReturns a list split at any element where predicate(element) is truthy, skipping that element")
 /* f7 */
 /* f8 */
 /* f9 */
@@ -291,7 +291,7 @@ export function ValidateMeta() {
                 else{
                     let args = new Array(Math.max(0, (Behaviours.get(i)??[]).length - 1)).fill(' any').join();
                     let namedArgs = new Array(Math.max(0, (Behaviours.get(i)??[]).length - 1)).fill(0).map((_,i)=>`arg${i}`).join(', ');
-                    Metas.set(name, `any: ${name}${args}`, `(left: any).${name}(${namedArgs})\n\n`);
+                    Metas.set(name, `any: ${name}${args}`, `(left: any).${name}(${namedArgs})\n\n##### A DESCRIPTION HAS YET TO BE PROVIDED ####`);
                     s += `/* ${i.toString(16)} */ Metas.set("${name}", "any: ${name}${args}", "(left: any).${name}(${namedArgs})\\n\\n");\n`
                 }
             }

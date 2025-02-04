@@ -22,13 +22,15 @@ import "./Links/Math";
 import "./Links/ListComprehension";
 import "./Links/Noop";
 import "./Links/Strings";
+import "./Links/ControlFlow";
+import "./Links/Store";
 import { AsString } from "./Types";
 import { Global } from "./GlobalState";
 import ace from "react-ace";
 import "ace-builds/src-noconflict/ext-language_tools"
 import { Metas, ValidateMeta } from "./Meta";
 
-const VERSION = 1;
+const VERSION = 3;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";
@@ -67,19 +69,25 @@ function reRunBytecode(){
   runBytecode(lastByteCode);
 }
 
+const lamb = document.createElement("div");
+function HTMLEscape(text: string): string {
+  lamb.innerText = text;
+  return lamb.innerHTML;
+}
+
 function codeChanged(newCode: string) {
   UpdateURL()
   byteSource = "verbose";
   if (newCode.length === 0) {
     let s = "   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F";
     for (let y = 0; y < 16; y++) {
-      s += `\n${y.toString(16).toUpperCase()}0`;
+      s += `<br>${y.toString(16).toUpperCase()}0`;
       for (let x = 0; x < 16; x++) {
         let c = ByteMap.get(y * 16 + x) ?? "??";
-        s += ` ${c}${c.length == 1 ? " " : ""}`;
+        s += c === "??" ? ` ${c}` : ` <span class='singlecharacter'>${HTMLEscape(c)}</span> `;
       }
     }
-    document.getElementById("modified")!.textContent = s;
+    document.getElementById("modified")!.innerHTML = s;
     return;
   }
   try {
@@ -90,7 +98,7 @@ function codeChanged(newCode: string) {
     let reEmitted = pLinks.flatMap((c) => [...c.ReEmit()]);
     (document.querySelector("#hexinput") as HTMLTextAreaElement)!.value = reEmitted.map(c=>(c < 16 ? '0' : '') + c.toString(16).toUpperCase()).join(' ');
     let recharacterized = ToCharacters(new Uint8Array(reEmitted));
-    document.getElementById("modified")!.textContent = `${recharacterized}`;
+    document.getElementById("modified")!.innerHTML = recharacterized;
     runBytecode(new Uint8Array(reEmitted))
   } catch (e) {
     document.getElementById("output")!.textContent = `${e}`;
@@ -111,15 +119,15 @@ function changeHex(evnt: React.ChangeEvent<HTMLTextAreaElement>){
       s += `\n${y.toString(16).toUpperCase()}0`;
       for (let x = 0; x < 16; x++) {
         let c = ByteMap.get(y * 16 + x) ?? "??";
-        s += ` ${c}${c.length == 1 ? " " : ""}`;
+        s += c === "??" ? ` ${c}` : ` <span class='singlecharacter'>${HTMLEscape(c)}</span> `;
       }
     }
-    document.getElementById("modified")!.textContent = s;
+    document.getElementById("modified")!.innerHTML = s;
     return;
   }
   let bytes = new Uint8Array(modified.split(' ').filter(c=>c.length).map(c=>+`0x${c}`));
   let recharacterized = ToCharacters(bytes);
-  document.getElementById("modified")!.textContent = `${recharacterized}`;
+  document.getElementById("modified")!.innerHTML = recharacterized;
   runBytecode(bytes);
 }
 

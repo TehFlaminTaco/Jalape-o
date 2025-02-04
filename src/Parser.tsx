@@ -137,7 +137,7 @@ class PseudoLink {
         break;
       case 0x3e:
         // Integer
-        bytes.splice(0, 0, ...ToInt7(this.store["integer"]));
+        bytes.splice(0, 0, ...ToInt7(this.store["integer"]).reverse());
         break;
       case 0x3f:
         // Float

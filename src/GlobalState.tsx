@@ -3,6 +3,7 @@ import { Chain, Value } from "./Types";
 export class GlobalState {
   Chains: Chain[] = [];
   Inputs: Value[] = [];
+  Storage: Value[] = [];
   Output: Value = "";
 }
 
