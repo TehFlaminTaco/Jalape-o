@@ -33,7 +33,7 @@ import { Metas, ValidateMeta } from "./Meta";
 import ByteRunner from "./RunnerWorker.tsx?worker";
 import { RunData, TalkData } from "./RunData";
 
-const VERSION = 4;
+const VERSION = 5;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";
@@ -248,7 +248,7 @@ function CopyCMC(){
 }
 
 function CopyCodeGolf() {
-  let hex = RenderHex(lastByteCode).replaceAll(/^/g, "\t");
+  let hex = RenderHex(lastByteCode).replaceAll(/^/gm, "    ");
   let code = ToCharacters(lastByteCode);
 
   let s = `# [Jalapeño](https://www.github.com/TehFlaminTaco/Jalape-o), ${lastByteCode.length} bytes\n`
