@@ -23,7 +23,7 @@ function Add(left: Value, r: Link): Value {
     // If none of the above, return either if truthy
     return Truthy(left) ? left : right
   }
-  return Adder(left, r.Call(Global.Inputs[0]));
+  return Adder(left, r.Call());
 }
 
 function Subtract(left: Value, r: Link): Value {
@@ -47,7 +47,7 @@ function Subtract(left: Value, r: Link): Value {
     // If none of the above, return either if truthy
     return Truthy(left) ? left : right;
   }
-  return Subtractor(left, r.Call(Global.Inputs[0]));
+  return Subtractor(left, r.Call());
 }
 
 function Multiply(left: Value, r: Link): Value {
@@ -71,7 +71,7 @@ function Multiply(left: Value, r: Link): Value {
     // If none of the above, treat like && for truthy values
     return Truthy(left) ? right :  left;
   }
-  return Multiplier(left, r.Call(Global.Inputs[0]));
+  return Multiplier(left, r.Call());
 }
 
 function Divide(left: Value, r: Link): Value {
@@ -95,7 +95,7 @@ function Divide(left: Value, r: Link): Value {
     // If none of the above, treat like || for truthy values
     return Truthy(left) ? right :  left;
   }
-  return Divider(left, r.Call(Global.Inputs[0]));
+  return Divider(left, r.Call());
 }
 
 function Modulo(left: Value, r: Link): Value {
@@ -124,7 +124,7 @@ function Modulo(left: Value, r: Link): Value {
     // If none of the above, treat like || for truthy values
     return Truthy(left) ? right :  left;
   }
-  return Modulator(left, r.Call(Global.Inputs[0]));
+  return Modulator(left, r.Call());
 }
 
 function Power(left: Value, r: Link): Value {
@@ -144,15 +144,15 @@ function Power(left: Value, r: Link): Value {
     // If none of the above, treat like || for truthy values
     return Truthy(left) ? right :  left;
   }
-  return Powerer(left, r.Call(Global.Inputs[0]));
+  return Powerer(left, r.Call());
 }
 
 function And(left: Value, r: Link): Value {
-  return Truthy(left) ? r.Call(Global.Inputs[0]) : left;
+  return Truthy(left) ? r.Call() : left;
 }
 
 function Or(left: Value, r: Link): Value {
-  return Truthy(left) ? left :  r.Call(Global.Inputs[0]);
+  return Truthy(left) ? left :  r.Call();
 }
 
 function Not(left: Value): Value {
@@ -181,7 +181,7 @@ export function _Equal(left: Value, right: Value): number {
 }
 
 function Equal(left: Value, r: Link): number {
-  let right = r.Call(Global.Inputs[0]);
+  let right = r.Call();
   return _Equal(left, right);
 }
 
@@ -218,53 +218,53 @@ export function _Compare(left: Value, right: Value): number {
 }
 
 function Compare(left: Value, r: Link): Value {
-  return _Compare(left, r.Call(Global.Inputs[0]))
+  return _Compare(left, r.Call())
 }
 
 function Greater(left: Value, r: Link): Value {
-  return _Compare(left, r.Call(Global.Inputs[0])) > 0 ? 1 : 0;
+  return _Compare(left, r.Call()) > 0 ? 1 : 0;
 }
 
 function Less(left: Value, r: Link): Value {
-  return _Compare(left, r.Call(Global.Inputs[0])) < 0 ? 1 : 0;
+  return _Compare(left, r.Call()) < 0 ? 1 : 0;
 }
 
 function GreaterEqual(left: Value, r: Link): Value {
-  let right = r.Call(Global.Inputs[0]);
-  return _Compare(left, r.Call(Global.Inputs[0])) > 0 ? 1 : _Equal(left, right);
+  let right = r.Call();
+  return _Compare(left, r.Call()) > 0 ? 1 : _Equal(left, right);
 }
 
 function LessEqual(left: Value, r: Link): Value {
-  let right = r.Call(Global.Inputs[0]);
-  return _Compare(left, r.Call(Global.Inputs[0])) < 0 ? 1 : _Equal(left, right);
+  let right = r.Call();
+  return _Compare(left, r.Call()) < 0 ? 1 : _Equal(left, right);
 }
 
 function BitwiseOr(left: Value, right: Link): Value {
-  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+  return new Vectorized(left, right.Call()).get((left: Value, right: Value)=>
     AsNumber(left)|AsNumber(right)
   )
 }
 
 function BitwiseAnd(left: Value, right: Link): Value {
-  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+  return new Vectorized(left, right.Call()).get((left: Value, right: Value)=>
     AsNumber(left)&AsNumber(right)
   )
 }
 
 function BitwiseXor(left: Value, right: Link): Value {
-  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+  return new Vectorized(left, right.Call()).get((left: Value, right: Value)=>
     AsNumber(left)^AsNumber(right)
   )
 }
 
 function BitshiftLeft(left: Value, right: Link): Value {
-  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+  return new Vectorized(left, right.Call()).get((left: Value, right: Value)=>
     AsNumber(left)<<AsNumber(right)
   )
 }
 
 function BitshiftRight(left: Value, right: Link): Value {
-  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left: Value, right: Value)=>
+  return new Vectorized(left, right.Call()).get((left: Value, right: Value)=>
     AsNumber(left)>>AsNumber(right)
   )
 }
@@ -359,7 +359,7 @@ function LogE(n: Value): Value {
 }
 
 function Log(n: Value, base: Link): Value {
-  return new Vectorized(n, base.Call(Global.Inputs[0])).get((n: Value, base: Value) => Math.log(AsNumber(n)) / Math.log(AsNumber(base)));
+  return new Vectorized(n, base.Call()).get((n: Value, base: Value) => Math.log(AsNumber(n)) / Math.log(AsNumber(base)));
 }
 
 function PrimeFactors(n: Value): Value {
@@ -418,7 +418,7 @@ function ATan(n: Value): Value {
   return new Vectorized(n).get((n: Value) => Math.atan(AsNumber(n)));
 }
 function ATan2(y: Value, x: Link): Value {
-  return new Vectorized(y, x.Call(Global.Inputs[0])).get((y: Value, x: Value) => Math.atan2(AsNumber(y), AsNumber(x)));
+  return new Vectorized(y, x.Call()).get((y: Value, x: Value) => Math.atan2(AsNumber(y), AsNumber(x)));
 }
 
 QRegister("Add", Add, "+", 0x50, "+");

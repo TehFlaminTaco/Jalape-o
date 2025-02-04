@@ -1,3 +1,4 @@
+import { Global, WithInputs } from "./GlobalState";
 import { VectorizedOver } from "./Helpers";
 
 export type Value = undefined | number | string | Value[];
@@ -44,6 +45,8 @@ export function Truthy(v: Value): boolean {
   }
 }
 
+const NoArgument: unique symbol = Symbol();
+
 export class Link {
   Method: Behaviour;
   Arguments: Link[] = [];
@@ -54,8 +57,11 @@ export class Link {
     this.Arguments = args;
   }
 
-  Call(left: Value): Value {
-    return this.Method(left, ...this.Arguments);
+  Call(left: Value|(typeof NoArgument) = NoArgument): Value {
+    if(left === NoArgument)
+      return this.Method(Global.Inputs[0], ...this.Arguments);
+    else
+      return WithInputs([left], ()=>this.Method(left, ...this.Arguments));
   }
 }
 

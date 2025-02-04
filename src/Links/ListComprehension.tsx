@@ -24,7 +24,7 @@ function Reduce(left: Value, right: Link): Value {
 function ReduceInitial(left: Value, initial: Link, right: Link): Value {
   return AsList(left).reduce(
     (acc, x) => WithInputs([acc, x], () => right.Call(acc)),
-    initial.Call(Global.Inputs[0])
+    initial.Call()
   );
 }
 
@@ -42,7 +42,7 @@ function FoldInitial(left: Value, initial: Link, right: Link) {
   let l = AsList(left);
   if (l.length <= 0) return [];
   let outList = [];
-  let lVal = initial.Call(Global.Inputs[0]);
+  let lVal = initial.Call();
   for (let i = 0; i < l.length; i++) {
     outList.push(WithInputs([lVal, l[i]], () => right.Call(lVal)));
     lVal = l[i];
@@ -88,7 +88,7 @@ function FirstIndexOf(left: Value, predicate: Link): Value {
 }
 
 function Head(left: Value, count: Link): Value {
-  return new Vectorized(count.Call(Global.Inputs[0])).get(count => {
+  return new Vectorized(count.Call()).get(count => {
     if (typeof left === "string")
       return left.slice(0, AsNumber(count));
     return AsList(left).slice(0, AsNumber(count));
@@ -119,7 +119,7 @@ function LastIndexOf(left: Value, predicate: Link): Value {
 }
 
 function Tail(left: Value, count: Link): Value {
-  return new Vectorized(count.Call(Global.Inputs[0])).get(count => {
+  return new Vectorized(count.Call()).get(count => {
     if (typeof left === "string")
       return left.slice(AsNumber(count));
     return AsList(left).slice(AsNumber(count));
@@ -127,11 +127,11 @@ function Tail(left: Value, count: Link): Value {
 }
 
 function AtIndex(left: Value, index: Link): Value {
-  return new Vectorized(index.Call(Global.Inputs[0])).get(index=>AsList(left)[AsNumber(index)]);
+  return new Vectorized(index.Call()).get(index=>AsList(left)[AsNumber(index)]);
 }
 
 function Slice(left: Value, start: Link, length: Link): Value {
-  return new Vectorized(start.Call(Global.Inputs[0]), length.Call(Global.Inputs[0])).get((start, length)=>
+  return new Vectorized(start.Call(), length.Call()).get((start, length)=>
     AsList(left).slice(
       AsNumber(start),
       AsNumber(start) + AsNumber(length)
@@ -216,7 +216,7 @@ function Choices(left: Value): Value {
 
 function ChoicesOfLength(left: Value, right: Link): Value {
   let l = AsList(left);
-  let targetLength = AsNumber(right.Call(Global.Inputs[0]));
+  let targetLength = AsNumber(right.Call());
   let outList = [];
   for (let i = 0; i < Math.pow(2, l.length); i++) {
     let choice = _ChoiceIndex(l, i);
@@ -244,7 +244,7 @@ function ProductBy(left: Value, right: Link): Value {
 }
 
 function Union(left: Value, r: Link): Value {
-  let right = AsList(r.Call(Global.Inputs[0]));
+  let right = AsList(r.Call());
   left = AsList(left).concat();
   for(let e of right){
     if(left.some((v:Value)=>_Equal(e,v))) continue;
@@ -254,7 +254,7 @@ function Union(left: Value, r: Link): Value {
 }
 
 function Intersect(left: Value, r: Link): Value {
-  let right = AsList(r.Call(Global.Inputs[0]));
+  let right = AsList(r.Call());
   let i = [];
   for(let e of AsList(left)){
     if(!right.some((v:Value)=>_Equal(e,v))) continue;

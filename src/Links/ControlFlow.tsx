@@ -4,12 +4,12 @@ import { Value, Link, Truthy } from "../Types";
 
 function If(left: Value, truthy: Link): Value {
     if (Truthy(left))
-        return truthy.Call(Global.Inputs[0]);
+        return truthy.Call();
     return left;
 }
 
 function IfElse(left: Value, truthy: Link, falsy: Link): Value {
-    return Truthy(left) ? truthy.Call(Global.Inputs[0]) : falsy.Call(Global.Inputs[0]);
+    return Truthy(left) ? truthy.Call() : falsy.Call();
 }
 
 function While(left: Value, condition: Link, body: Link): Value {

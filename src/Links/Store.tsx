@@ -18,7 +18,7 @@ function Store2(left: Value): Value {
 }
 
 function StoreX(left: Value, x: Link): Value {
-    Global.Storage[AsNumber(x.Call(Global.Inputs[0]))] = left;
+    Global.Storage[AsNumber(x.Call())] = left;
     return left;
 }
 
@@ -35,7 +35,7 @@ function Load2(): Value {
 }
 
 function LoadX(_: Value, x: Link): Value {
-    return Global.Storage[AsNumber(x.Call(Global.Inputs[0]))];
+    return Global.Storage[AsNumber(x.Call())];
 }
 //₀₁₂ₓ
 QRegister("Store0", Store0, '⤞₀', 0x80);
