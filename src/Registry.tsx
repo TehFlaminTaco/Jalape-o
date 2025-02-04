@@ -11,7 +11,7 @@ export let Behaviours: Map<number, Behaviour> = new Map();
 const ASSERT_UNIQUE = true;
 
 // Substring numbers
-// ₀₁₂₃₄₅₆₇₈₉ₓ
+// ₀₁₂₃₄₅₆₇₈₉ₓ₊₋
 
 export function FromCharacters(charCode: string): Uint8Array {
   const chars = [...charCode.matchAll(/¿[0-9A-Fa-f]{2}\?|.[₀-₉ₓ₊₋]?/g)];

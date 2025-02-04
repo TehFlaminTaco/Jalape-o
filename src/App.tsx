@@ -23,13 +23,14 @@ import "./Links/ListComprehension";
 import "./Links/Noop";
 import "./Links/Strings";
 import "./Links/ControlFlow";
+import "./Links/Store";
 import { AsString } from "./Types";
 import { Global } from "./GlobalState";
 import ace from "react-ace";
 import "ace-builds/src-noconflict/ext-language_tools"
 import { Metas, ValidateMeta } from "./Meta";
 
-const VERSION = 2;
+const VERSION = 3;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";

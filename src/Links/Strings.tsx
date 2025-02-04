@@ -155,6 +155,16 @@ function Char(left: Value): Value {
   })
 }
 
+function Lower(left: Value): Value {
+  return new Vectorized(left).get(left=>AsString(left).toLowerCase());
+}
+function Upper(left: Value): Value {
+  return new Vectorized(left).get(left=>AsString(left).toUpperCase());
+}
+function CapitalizeWords(left: Value): Value {
+  return new Vectorized(left).get(left=>AsString(left).capitalizeWords());
+}
+
 QRegister("Print", Print, "P", 0x10);
 QRegister("Write", Write, "W", 0x11);
 QRegister("Replace", Replace, "R", 0x12);
@@ -175,3 +185,6 @@ QRegister("Format3", Format3, "F₃", 0x03);
 QRegister("FormatX", FormatX, "Fₓ", 0x04);
 QRegister("Byte", Byte, "B", 0x1E);
 QRegister("Char", Char, "B₋", 0x1F);
+QRegister("Upper", Upper, "U", 0x2B);
+QRegister("Lower", Lower, "U₋", 0x2C);
+QRegister("CapitalizeWords", CapitalizeWords, "T", 0x2D);

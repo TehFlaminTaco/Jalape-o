@@ -58,6 +58,14 @@ function Ten(): Value {
   return 10;
 }
 
+function Pi(): Value {
+  return Math.PI;
+}
+
+function E(): Value {
+  return Math.E;
+}
+
 function IntegerConstant(this: Link): Value {
   return this.store["integer"];
 }
@@ -106,3 +114,5 @@ QRegister("NegativeOne", NegativeOne, "-₁", 0x3c);
 QRegister("Half", Half, "½", 0x3d);
 QRegister("IntegerConstant", IntegerConstant, "$", 0x3e);
 QRegister("FloatConstant", FloatConstant, "‰", 0x3f);
+QRegister("Pi", Pi, "π", 0x41)
+QRegister("E", E, "e", 0x42)

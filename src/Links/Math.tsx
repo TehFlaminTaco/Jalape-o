@@ -159,7 +159,7 @@ function Not(left: Value): Value {
   return !Truthy(left) ? 1 : 0;
 }
 
-function _Equal(left: Value, right: Value): number {
+export function _Equal(left: Value, right: Value): number {
   if(typeof(left) === "undefined" || typeof(right) === "undefined")
     return typeof(left) === typeof(right) ? 1 : 0;
   if(typeof(left) === "string" || typeof(right) === "string")
@@ -189,7 +189,7 @@ function NotEqual(left: Value, r: Link): Value {
   return 1 - Equal(left, r);
 }
 
-function _Compare(left: Value, right: Value): number {
+export function _Compare(left: Value, right: Value): number {
   if(typeof(left) === "undefined" || typeof(right) === "undefined")
     return 0; // Undefined is unorderable.
   if(typeof(left) === "string" || typeof(right) === "string")
@@ -218,7 +218,7 @@ function _Compare(left: Value, right: Value): number {
 }
 
 function Compare(left: Value, r: Link): Value {
-  return _Compare(left, r.Call(Global.Inputs[0])) === 0 ? 1 : 0;
+  return _Compare(left, r.Call(Global.Inputs[0]))
 }
 
 function Greater(left: Value, r: Link): Value {
@@ -354,6 +354,73 @@ function RandomFloat(max: Value): Value {
   return (Math.random() * AsNumber(max));
 }
 
+function LogE(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.log(AsNumber(n)));
+}
+
+function Log(n: Value, base: Link): Value {
+  return new Vectorized(n, base.Call(Global.Inputs[0])).get((n: Value, base: Value) => Math.log(AsNumber(n)) / Math.log(AsNumber(base)));
+}
+
+function PrimeFactors(n: Value): Value {
+  return new Vectorized(n).get((n: Value)=>{n = AsNumber(n);
+    const factors: number[] = [];
+    let div = 2;
+    while(n >= 2){
+      if(n % div === 0){
+        factors.push(div);
+        n /= div;
+      }else{
+        div++;
+      }
+    }
+    return factors;
+  })
+}
+
+function IsPrime(n: Value): Value {
+  return new Vectorized(n).get((n: Value)=>{n = AsNumber(n);
+    for(let i=2; i * i <= n; i++){
+      if(n%i === 0)
+        return 0;
+    }
+    return 1;
+  });
+}
+
+function Factors(n: Value): Value {
+  return new Vectorized(n).get((n: Value)=>{n = AsNumber(n);
+    let factors = [];
+    for(let i=1; i <= n; i++){
+      if(n % i === 0)
+        factors.push(i);
+    }
+    return factors;
+  });
+}
+
+function Sin(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.sin(AsNumber(n)));
+}
+function Cos(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.cos(AsNumber(n)));
+}
+function Tan(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.tan(AsNumber(n)));
+}
+function ASin(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.asin(AsNumber(n)));
+}
+function ACos(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.acos(AsNumber(n)));
+}
+function ATan(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.atan(AsNumber(n)));
+}
+function ATan2(y: Value, x: Link): Value {
+  return new Vectorized(y, x.Call(Global.Inputs[0])).get((y: Value, x: Value) => Math.atan2(AsNumber(y), AsNumber(x)));
+}
+
 QRegister("Add", Add, "+", 0x50, "+");
 QRegister("Subtract", Subtract, "-", 0x51, "-");
 QRegister("Multiply", Multiply, "*", 0x52, "*");
@@ -383,3 +450,15 @@ QRegister("BitshiftRight", BitshiftRight, "»", 0x69, '>>');
 QRegister("RandomDecimal", RandomDecimal, "r₀", 0x6A)
 QRegister("RandomInteger", RandomInteger, "r₁", 0x6B)
 QRegister("RandomFloat", RandomFloat, "r₂", 0x6C)
+QRegister("LogE", LogE, "l", 0x6D);
+QRegister("Log", Log, "lₓ", 0x6E);
+QRegister("PrimeFactors", PrimeFactors, "f₁", 0x6F);
+QRegister("Factors", Factors, "f", 0x70);
+QRegister("IsPrime", IsPrime, "′", 0x71);
+QRegister("Sin", Sin, "◿", 0x72);
+QRegister("Cos", Cos, "◹", 0x73);
+QRegister("Tan", Tan, "◸", 0x74);
+QRegister("ASin", ASin, "◿₋", 0x75);
+QRegister("ACos", ACos, "◹₋", 0x76);
+QRegister("ATan", ATan, "◸₋", 0x77);
+QRegister("ATan2", ATan2, "◸₂", 0x78);
