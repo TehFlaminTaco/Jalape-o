@@ -33,7 +33,7 @@ import { Metas, ValidateMeta } from "./Meta";
 import ByteRunner from "./RunnerWorker.tsx?worker";
 import { RunData, TalkData } from "./RunData";
 
-const VERSION = 6;
+const VERSION = 7;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";
@@ -225,7 +225,7 @@ function hexPad(n: number, places: number = 4){
 }
 
 function RenderHex(Heap: Uint8Array){
-  let heap = "   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n";
+  let heap = "       0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n";
   for (let i = 0; i < Heap.length; i += 16) {
     heap += `${hexPad(i, 4)}: `;
     for (let j = 0; j < 16; j++) {
