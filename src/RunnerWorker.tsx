@@ -25,7 +25,9 @@ self.onmessage = (event: MessageEvent<RunData>) => {
         let compiled = Compile(pLinks);
         Global.Output = '';
         let res = Evaluate(compiled, Global.Inputs[0]);
-        self.postMessage(['output', AsString(res)]);
+        if(res !== undefined)
+            Global.Output += AsString(res);
+        self.postMessage(['output', Global.Output]);
         self.postMessage(['unlock']);
     }catch(e){
         self.postMessage(['output',`${e}`]);
