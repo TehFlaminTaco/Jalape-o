@@ -5,11 +5,13 @@ import { AsList, AsNumber, AsString, Link, Value, Vectorized } from "../Types";
 
 function Print(left: Value): Value {
   Global.Output += `${AsString(left)}\n`;
+  self.postMessage(['output',`${Global.Output}`])
   return undefined;
 }
 
 function Write(left: Value): Value {
   Global.Output += `${AsString(left)}`;
+  self.postMessage(['output',`${Global.Output}`])
   return undefined;
 }
 
