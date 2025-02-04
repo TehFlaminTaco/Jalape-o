@@ -248,7 +248,7 @@ function CopyCMC(){
 }
 
 function CopyCodeGolf() {
-  let hex = RenderHex(lastByteCode).replaceAll(/^/gm, "\t");
+  let hex = RenderHex(lastByteCode).replaceAll(/^/gm, "    ");
   let code = ToCharacters(lastByteCode);
 
   let s = `# [Jalapeño](https://www.github.com/TehFlaminTaco/Jalape-o), ${lastByteCode.length} bytes\n`
