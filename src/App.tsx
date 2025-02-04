@@ -33,7 +33,7 @@ import { Metas, ValidateMeta } from "./Meta";
 import ByteRunner from "./RunnerWorker.tsx?worker";
 import { RunData, TalkData } from "./RunData";
 
-const VERSION = 5;
+const VERSION = 6;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";
@@ -165,7 +165,7 @@ function changeInput(){
 function CheckForUpdates(): string {
   fetch(`../version.txt`, {cache: "no-store"}).then(c=>c.text()).then(c=>{
     if(+c > VERSION){
-      document.querySelector(".middle")!.innerHTML = `v${VERSION} - A newer version is available <a href='../${VERSION}'>HERE</a>`
+      document.querySelector(".middle")!.innerHTML = `v${VERSION} - A newer version is available <a href=${JSON.stringify((window.location+'').replace('/'+VERSION+'/', '/' + c + '/'))}>HERE</a>`
     }else{
       document.querySelector(".middle")!.innerHTML = `v${VERSION}`;
     }
