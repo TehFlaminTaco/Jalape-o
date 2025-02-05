@@ -1,4 +1,4 @@
-import { Behaviours, BytesToNames, NamesToBytes } from "./Registry";
+import { Behaviours, ByteMap, BytesToNames, CharMap, NamesToBytes } from "./Registry";
 
 export class Metas {
     static structures: Map<string, string> = new Map();
@@ -86,14 +86,14 @@ export class Metas {
 /* 40 */ Metas.set("negative", "negative value", "negative(value: any)=>any\n\nIf value is a list, returns 0-value.\nIf value is a list or a string, reverses it.")
 /* 41 */ Metas.set("pi", "any: pi", "(left: any).pi()\n\n")
 /* 42 */ Metas.set("e", "any: e", "(left: any).e()\n\n")
-/* 43 */
-/* 44 */
-/* 45 */
-/* 46 */
-/* 47 */
-/* 48 */
-/* 49 */
-/* 4a */
+/* 43 */ Metas.set("tonumber", "left: tonumber", "(left: any).tonumber()\n\nReturns left as a number.");
+/* 44 */ Metas.set("tobase", "n: tobase b", "(n: number).tobase(b: number)\nVectorized\n\nReturns n in base b. If b is a string, returns mapped to the index of characters in b, otherwise, returns a bigendian array");
+/* 45 */ Metas.set("frombase", "n: frombase b", "(n: number[]).frombase(b: number)\nVectorized\n\nConverts n from base b into a number. Expects an array of numbers expect where b is a string, where it translates from indexes of characters in b");
+/* 46 */ Metas.set("translatebase", "n: translatebase from, to", "(n: number).translatebase(from: number, to: number)\nVectorized\n\nEffectively frombase(from):tobase(to), but works on arbitrarily large intermediate values");
+/* 47 */ Metas.set("tobinary", "n: tobinary", "(n: number).tobinary()\nVectorized\n\nReturns n as a binary string.");
+/* 48 */ Metas.set("frombinary", "n: frombinary", "(n: string).frombinary()\nVectorized\n\nReturns the number represented by the binary n.");
+/* 49 */ Metas.set("tohex", "n: tohex", "(n: number).tohex()\nVectorized\n\nReturns n as a hexadecimal string");
+/* 4a */ Metas.set("fromhex", "n: fromhex", "(n: string).fromhex()\nVectorized\n\nReturns the number represented by the hexadecimal n.");
 /* 4b */
 /* 4c */
 /* 4d */
@@ -177,8 +177,8 @@ export class Metas {
 /* 9b */
 /* 9c */
 /* 9d */
-/* 9e */
-/* 9f */
+/* 9e */ Metas.set("digits", "digits", "digits()\n\nReturns the string \"0123456789\"")
+/* 9f */ Metas.set("alphanumeric", "alphanumeric", "alphanumeric()\n\nReturns a string contaning all upper and lower-case letters, as well as all digits")
 /* a0 */ Metas.set("if", "condition: if then", "(condition: any).if(then: ()=>any)\n\nIf condition is truthy, returns the result of then, otherwise, returns condition.")
 /* a1 */ Metas.set("ifelse", "condition: ifelse then, else", "(condition: any).ifelse(then: ()=>any, else: ()=>any)\n\nif condition is truthy, retursn the result of then, otherwise returns the result of else.")
 /* a2 */ Metas.set("while", "initial: while condition, body", "(initial: any).while(condition: (any)=>any, body: (any)=>any)\n\nWhile the result of condition(initial) is truthy, sets initial to the result of body(initial). Returns the current value of initial.")
@@ -266,8 +266,8 @@ export class Metas {
 /* f4 */ Metas.set("groupby", "list: groupby selector", "(list: any[]).groupby(selector: (any)=>any)\n\nReturns list split into sublists in which selector(element) is equal.")
 /* f5 */ Metas.set("splitbetween", "list: splitbetween predicate", "(list: any[]).splitbetween(predicate: (any,any)=>any)\n\nReturns list split between any two elements such predicate(left,right) is truthy")
 /* f6 */ Metas.set("splitat", "list: splitat predicate", "(list: any[]).splitat(predicate: (any)=>any)\n\nReturns a list split at any element where predicate(element) is truthy, skipping that element")
-/* f7 */
-/* f8 */
+/* f7 */ Metas.set("transpose", "list: transpose", "(a: any[][]).transpose()\n\nReturns 'list' transpose, such that list[x][y] => list[y][x]")
+/* f8 */ Metas.set("without", "a: without b", "(a: any[]).without(b)\n\nReturns a list of all elements of 'a' that do not appear in 'b")
 /* f9 */
 /* fa */
 /* fb */
@@ -276,19 +276,17 @@ export class Metas {
 /* fe */
 /* ff */
 
+export function WeaklyDefinied() {return undefined}
+
 export function ValidateMeta() {
     let s = "";
     for(let i=0; i < 256; i++){
-        if(!BytesToNames.has(i))
-            s += `/* ${i.toString(16)} */\n`
-        else{
+        if(BytesToNames.has(i)){
             let allNames = [...NamesToBytes.entries()].filter(c=>c[1] === i).map(c=>c[0]);
             for(let name of allNames){
                 if(!name.match(/^[\w_0-9]+$/))
                     continue;
-                if(Metas.has(name))
-                    s += `/* ${i.toString(16)} */ Metas.set("${name}", ${JSON.stringify(Metas.getStructure(name)!)}, ${JSON.stringify(Metas.getDescription(name)!)})\n`
-                else{
+                if(!Metas.has(name)){
                     let args = new Array(Math.max(0, (Behaviours.get(i)??[]).length - 1)).fill(' any').join();
                     let namedArgs = new Array(Math.max(0, (Behaviours.get(i)??[]).length - 1)).fill(0).map((_,i)=>`arg${i}`).join(', ');
                     Metas.set(name, `any: ${name}${args}`, `(left: any).${name}(${namedArgs})\n\n##### A DESCRIPTION HAS YET TO BE PROVIDED ####`);
@@ -297,5 +295,25 @@ export function ValidateMeta() {
             }
         }
     }
+
+    let ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ".split('');
+    ascii = ascii.concat(ascii.map(c=>c+"₊")).filter(c=>!CharMap.has(c));
+    for(let i=0; i < 256; i++){
+        if(!ByteMap.has(i)){
+            // Create a false-mapping to the next available ascii character.
+            if(ascii.length === 0){
+                console.error("Coudn't finish mapping all spare character :(");
+                break;
+            }
+            let c = ascii.splice(0,1)[0];
+            ByteMap.set(i, c);
+            CharMap.set(c, i);
+            Behaviours.set(i, WeaklyDefinied);
+            BytesToNames.set(i, "weaklydefined");
+            Metas.set("weaklydefined", "", "");
+        }
+    }
+
+
     console.log(s);
 }

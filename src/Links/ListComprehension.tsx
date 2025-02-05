@@ -245,12 +245,14 @@ function ProductBy(left: Value, right: Link): Value {
 
 function Union(left: Value, r: Link): Value {
   let right = AsList(r.Call());
-  left = AsList(left).concat();
+  let l = AsList(left).concat();
   for(let e of right){
-    if(left.some((v:Value)=>_Equal(e,v))) continue;
-    left.push(e);
+    if(l.some((v:Value)=>_Equal(e,v))) continue;
+    l.push(e);
   }
-  return left;
+  if(typeof left === 'string')
+    return l.join('');
+  return l;
 }
 
 function Intersect(left: Value, r: Link): Value {
@@ -260,6 +262,21 @@ function Intersect(left: Value, r: Link): Value {
     if(!right.some((v:Value)=>_Equal(e,v))) continue;
     i.push(e);
   }
+  if(typeof left === 'string')
+    return i.join('');
+  return i;
+}
+
+function Without(left: Value, r: Link): Value {
+  let right = AsList(r.Call());
+  let l = AsList(left);
+  let i = [];
+  for(let e of l){
+    if(right.some((v:Value)=>_Equal(e,v))) continue;
+    i.push(e);
+  }
+  if(typeof left === 'string')
+    return i.join('');
   return i;
 }
 
@@ -337,6 +354,8 @@ function GroupBy(left: Value, selector: Link): Value {
     }
     g.push(e);
   }
+  if(typeof(left) === "string")
+    return groups.map(c=>c[1].join(""));
   return groups.map(c=>c[1]);
 }
 
@@ -353,6 +372,8 @@ function SplitBetween(left: Value, predicate: Link): Value {
     cur.push(l[i]);
     last = l[i];
   }
+  if(typeof(left) === "string")
+    return lists.map(c=>c.join(""));
   return lists;
 }
 
@@ -368,9 +389,29 @@ function SplitAt(left: Value, predicate: Link): Value {
       cur.push(l[i]);
     }
   }
+  if(typeof(left) === "string")
+    return lists.map(c=>c.join(""));
   return lists;
 }
 
+function Transpose(left: Value): Value {
+  if(typeof(left) === "string"){
+    // Horror oneliners make me happy.
+    return (Transpose(left.split('\n').map(c=>c.split(''))) as Value[][]).map(c=>c.map(c=>c??' ').join('')).join('\n');
+  }
+  left = AsList(left);
+  let l: Value[][] = [];
+  for(let y=0; y < left.length; y++){
+    let lefty = AsList(left[y]);
+    for(let x = 0; x < lefty.length; x++){
+      l[x] ??= [];
+      while(l[x].length < y)
+        l[x].push(undefined);
+      l[x][y] = lefty[x];
+    }
+  }
+  return l;
+}
 
 /*
     List Comprehension functions are mapped to bytes 0xD0...
@@ -417,3 +458,5 @@ QRegister("MinBy", MinBy, '⇊ₓ', 0xf3);
 QRegister("GroupBy", GroupBy, "G", 0xf4);
 QRegister("SplitBetween", SplitBetween, "⇋", 0xf5)
 QRegister("SplitAt", SplitAt, "⇋₁", 0xf6)
+QRegister("Transpose", Transpose, "‘", 0xf7);
+QRegister("Without", Without, "∖", 0xf8);

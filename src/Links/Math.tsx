@@ -1,6 +1,6 @@
 import { Global } from "../GlobalState";
 import { QRegister } from "../Registry";
-import { AsNumber, AsString, Link, Truthy, Value, Vectorized } from "../Types";
+import { AsList, AsNumber, AsString, Link, Truthy, Value, Vectorized } from "../Types";
 
 function Add(left: Value, r: Link): Value {
   function Adder(left: Value, right: Value): Value {
@@ -421,6 +421,74 @@ function ATan2(y: Value, x: Link): Value {
   return new Vectorized(y, x.Call()).get((y: Value, x: Value) => Math.atan2(AsNumber(y), AsNumber(x)));
 }
 
+function ToBase(v: Value, base: Link): Value {
+  return new Vectorized(v, base.Call()).get((v, base)=>{
+    let n = Math.abs(AsNumber(v)) >>> 0;
+    let b = AsNumber(base);
+    if(typeof(base) === "string") b = base.length;
+    b = Math.max(0, AsNumber(b)) >>> 0;
+    let l: Value[] = [];
+    while(n > 0){
+      l.unshift(n % b);
+      n = (n / b) >>> 0;
+    }
+    if(typeof(base) === "string")
+      return l.map(c=>base.charAt(AsNumber(c))).join('');
+    return l;
+  });
+}
+
+function FromBase(list: Value, base: Link): Value {
+  return new Vectorized(base.Call()).get(base=>{
+    let l = AsList(list);
+    if(typeof(base) === 'string'){
+      l = l.map(c=>AsString(base).indexOf(AsString(c)));
+      base = base.length;
+    }
+    base = Math.max(0, AsNumber(base)) >>> 0;
+    let n = 0;
+    while(l.length){
+      n *= base;
+      n += AsNumber(l.pop());
+    }
+    return n;
+  });
+}
+
+function TranslateBase(list: Value, fromBase: Link, toBase: Link) {
+  return new Vectorized(fromBase.Call(), toBase.Call()).get((fromBase, toBase)=>{
+    let l = AsList(list);
+    let fB = AsNumber(fromBase);
+    if(typeof(fromBase) === 'string'){
+      fB = fromBase.length;
+      l = l.map(c=>fromBase.indexOf(AsString(c)));
+    }
+    let tB = AsNumber(toBase);
+    if(typeof(toBase) === "string") tB = toBase.length;
+    l = l.fromToBase(fB, tB);
+    if(typeof(toBase) === "string")
+      return l.map(c=>toBase.charAt(AsNumber(c))).join('');
+    return l;
+  })
+}
+
+function ToBinary(n: Value): Value {
+  return new Vectorized(n).get(n=>AsNumber(n).toString(2));
+}
+function FromBinary(b: Value): Value {
+  return new Vectorized(b).get(n=>+('0b'+AsString(n)));
+}
+function ToHex(n: Value): Value {
+  return new Vectorized(n).get(n=>AsNumber(n).toString(16));
+}
+function FromHex(h: Value): Value {
+  return new Vectorized(h).get(n=>+('0x'+AsString(n)));
+}
+
+function ToNumber(left: Value): Value {
+  return AsNumber(left);
+}
+
 QRegister("Add", Add, "+", 0x50, "+");
 QRegister("Subtract", Subtract, "-", 0x51, "-");
 QRegister("Multiply", Multiply, "*", 0x52, "*");
@@ -462,3 +530,11 @@ QRegister("ASin", ASin, "◿₋", 0x75);
 QRegister("ACos", ACos, "◹₋", 0x76);
 QRegister("ATan", ATan, "◸₋", 0x77);
 QRegister("ATan2", ATan2, "◸₂", 0x78);
+QRegister("ToNumber", ToNumber, "N", 0x43);
+QRegister("ToBase", ToBase, "b", 0x44);
+QRegister("FromBase", FromBase, "b₋", 0x45);
+QRegister("TranslateBase", TranslateBase, "bₓ", 0x46);
+QRegister("ToBinary", ToBinary, "β", 0x47);
+QRegister("FromBinary", ToBinary, "β₋", 0x48);
+QRegister("ToHex", ToHex, "η", 0x49);
+QRegister("FromHex", ToHex, "η₋", 0x4A);

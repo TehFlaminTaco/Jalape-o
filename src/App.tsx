@@ -1,7 +1,7 @@
 import "./styles.css";
 import AceEditor from "react-ace";
 import { Ace } from "ace-builds";
-import { ByteMap, ToCharacters, FromCharacters, NamesToBytes } from "./Registry";
+import { ByteMap, ToCharacters, FromCharacters, NamesToBytes, Behaviours, BytesToNames } from "./Registry";
 import {compress, decompress} from "@remusao/smaz";
 import {
   Compile,
@@ -28,12 +28,12 @@ import { AsString } from "./Types";
 import { Global } from "./GlobalState";
 import ace from "react-ace";
 import "ace-builds/src-noconflict/ext-language_tools"
-import { Metas, ValidateMeta } from "./Meta";
+import { Metas, ValidateMeta, WeaklyDefinied } from "./Meta";
 
 import ByteRunner from "./RunnerWorker.tsx?worker";
 import { RunData, TalkData } from "./RunData";
 
-const VERSION = 7;
+const VERSION = 8;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";
@@ -89,19 +89,31 @@ function HTMLEscape(text: string): string {
   return lamb.innerHTML;
 }
 
+function printCharTable() {
+  let s = "   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F";
+  for (let y = 0; y < 16; y++) {
+    s += `<br>${y.toString(16).toUpperCase()}0`;
+    for (let x = 0; x < 16; x++) {
+      let c = ByteMap.get(y * 16 + x)!;
+      let behaviour = Behaviours.get(y * 16 + x);
+      c = HTMLEscape(c);
+      if(behaviour === WeaklyDefinied){
+        c = `<span class='singlecharacter quiet'>${c}</span>`
+      }else{
+        let description = Metas.getDescription(BytesToNames.get(y * 16 + x)!)
+        c = `<span class='singlecharacter' title=${JSON.stringify(description?.replace(/\n/g, '&#010;'))}>${c}</span>`
+      }
+      s += ` ${c} `;
+    }
+  }
+  document.getElementById("modified")!.innerHTML = s;
+}
+
 function codeChanged(newCode: string) {
   UpdateURL()
   byteSource = "verbose";
   if (newCode.length === 0) {
-    let s = "   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F";
-    for (let y = 0; y < 16; y++) {
-      s += `<br>${y.toString(16).toUpperCase()}0`;
-      for (let x = 0; x < 16; x++) {
-        let c = ByteMap.get(y * 16 + x) ?? "??";
-        s += c === "??" ? ` ${c}` : ` <span class='singlecharacter'>${HTMLEscape(c)}</span> `;
-      }
-    }
-    document.getElementById("modified")!.innerHTML = s;
+    printCharTable();
     return;
   }
   try {
@@ -128,15 +140,7 @@ function changeHex(evnt: React.ChangeEvent<HTMLTextAreaElement>){
   modified = modified.replaceAll(/(\w\w)(?=\w)/g, "$1 ");
   evnt.target.value = modified;
   if(modified.length === 0){
-    let s = "   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F";
-    for (let y = 0; y < 16; y++) {
-      s += `\n${y.toString(16).toUpperCase()}0`;
-      for (let x = 0; x < 16; x++) {
-        let c = ByteMap.get(y * 16 + x) ?? "??";
-        s += c === "??" ? ` ${c}` : ` <span class='singlecharacter'>${HTMLEscape(c)}</span> `;
-      }
-    }
-    document.getElementById("modified")!.innerHTML = s;
+    printCharTable();
     return;
   }
   let bytes = new Uint8Array(modified.split(' ').filter(c=>c.length).map(c=>+`0x${c}`));
@@ -261,6 +265,7 @@ function CopyCodeGolf() {
 
 function SetupAce(e: Ace.Editor){
   ValidateMeta();
+  printCharTable();
   editor = e;
   editor.setOptions({
     enableBasicAutocompletion: true,

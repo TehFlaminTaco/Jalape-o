@@ -170,3 +170,7 @@ iframe {
   display: inline-block;
   width: 1ch;
 }
+
+.quiet {
+  color: #aaa;
+}
