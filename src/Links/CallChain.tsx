@@ -16,7 +16,7 @@ function CallChain2(left: Value): Value {
 }
 
 function CallChainX(left: Value, number: Link): Value {
-  let index = AsNumber(number.Call(Global.Inputs[0])) >>> 0;
+  let index = AsNumber(number.Call()) >>> 0;
   return WithInputs([left], ()=>Global.Chains[index].Call(left));
 }
 

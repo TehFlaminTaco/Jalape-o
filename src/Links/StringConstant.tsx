@@ -59,6 +59,14 @@ function PrintableAscii(): Value {
   return " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 }
 
+function AlphaNumeric(): Value {
+  return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+}
+
+function Digits(): Value {
+  return "0123456789"
+}
+
 QRegister("EmptyString", EmptyString, '"₀', 0x24);
 CheekyCompressions.set("", 0x24);
 QRegister("Space", Space, " ", 0x25);
@@ -69,3 +77,7 @@ QRegister("LowercaseAlphabet", LowercaseAlphabet, 'a', 0x27);
 CheekyCompressions.set("abcdefghijklmnopqrstuvwxyz", 0x27);
 QRegister("PrintableAscii", PrintableAscii, "¢₁", 0x28);
 CheekyCompressions.set(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 0x28);
+QRegister("AlphaNumeric", AlphaNumeric, 'A₀', 0x9F)
+CheekyCompressions.set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 0x9F);
+QRegister("Digits", Digits, '0₉', 0x9E);
+CheekyCompressions.set("0123456789", 0x9E);

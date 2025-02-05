@@ -20,7 +20,7 @@ function Input3(): Value {
 }
 
 function InputX(_left: Value, n: Link): Value {
-  return Global.Inputs[AsNumber(n.Call(Global.Inputs[0])) >>> 0];
+  return Global.Inputs[AsNumber(n.Call()) >>> 0];
 }
 
 export function InputIndex(ind: number): string {

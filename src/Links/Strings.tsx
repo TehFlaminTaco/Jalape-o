@@ -16,7 +16,7 @@ function Write(left: Value): Value {
 }
 
 function Replace(haystack: Value, needle: Link, replacement: Link): Value {
-  return new Vectorized(haystack, needle.Call(Global.Inputs[0])).get((haystack, needle)=>{
+  return new Vectorized(haystack, needle.Call()).get((haystack, needle)=>{
     let h = AsString(haystack);
     let n = new RegExp(AsString(needle), "g");
     return h.replaceAll(n, (...args) =>
@@ -26,7 +26,7 @@ function Replace(haystack: Value, needle: Link, replacement: Link): Value {
 }
 
 function Split(left: Value, separator: Link): Value {
-  return new Vectorized(left, separator.Call(Global.Inputs[0])).get((left, separator)=>
+  return new Vectorized(left, separator.Call()).get((left, separator)=>
     AsString(left)
       .split(AsString(separator))
       .map((x) => x as Value)
@@ -38,7 +38,7 @@ function Join(left: Value): Value {
 }
 
 function JoinBy(left: Value, separator: Link): Value {
-  return new Vectorized(separator.Call(Global.Inputs[0])).get(separator => 
+  return new Vectorized(separator.Call()).get(separator => 
     AsList(left).join(AsString(separator))
   );
 }
@@ -77,7 +77,7 @@ function JoinLines(left: Value): Value {
 
 function Match(left: Value, right: Link): Value {
   // Return the first match
-  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left, right)=>{
+  return new Vectorized(left, right.Call()).get((left, right)=>{
     let h = AsString(left);
     let r = new RegExp(AsString(right));
     let m = h.match(r);
@@ -89,7 +89,7 @@ function Match(left: Value, right: Link): Value {
 
 function Matches(left: Value, right: Link): Value {
   // Return all matches
-  return new Vectorized(left, right.Call(Global.Inputs[0])).get((left, right)=>{
+  return new Vectorized(left, right.Call()).get((left, right)=>{
     let h = AsString(left);
     let r = new RegExp(AsString(right), "g");
     let m = [...h.matchAll(r)];
@@ -114,27 +114,27 @@ function _FormatX(left: Value, children: Value[]): string {
 }
 
 function FormatX(left: Value, children: Link){
-  return _FormatX(left, AsList(children.Call(Global.Inputs[0])))
+  return _FormatX(left, AsList(children.Call()))
 }
 
 function Format1(left: Value, child1: Link){
   return new Vectorized(left).get(left=>_FormatX(left, [
-    child1.Call(Global.Inputs[0])
+    child1.Call()
   ]));
 }
 
 function Format2(left: Value, child1: Link, child2: Link){
   return new Vectorized(left).get(left=>_FormatX(left, [
-    child1.Call(Global.Inputs[0]),
-    child2.Call(Global.Inputs[0])
+    child1.Call(),
+    child2.Call()
   ]));
 }
 
 function Format3(left: Value, child1: Link, child2: Link, child3: Link){
   return new Vectorized(left).get(left=>_FormatX(left, [
-    child1.Call(Global.Inputs[0]),
-    child2.Call(Global.Inputs[0]),
-    child3.Call(Global.Inputs[0])
+    child1.Call(),
+    child2.Call(),
+    child3.Call()
   ]));
 }
 

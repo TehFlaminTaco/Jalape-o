@@ -292,12 +292,12 @@ export function ParseAsPseudoLinks(byteCode: Uint8Array): PseudoLink[] {
           if (b === 0x0a) break; // Chain seperator, we're done
           if (b === 0xc5) d++; // Immediately, we'll find a }, which increases the depth
           if (b === 0xc4) d--; // WHen we find the last {, we'll have d === 0
-          if (b === 0x0e) {
+          if (b === 0x3e) {
             // Number constant, the next few bytes are in Int7 format
             i--;
             while (byteCode[i] >= 0x80) i--;
           }
-          if (b === 0x0f) {
+          if (b === 0x3f) {
             // Float constant, the next few bytes are in Int7 format with an additional exponent byte
             i--;
             while (byteCode[i] >= 0x80) i--;

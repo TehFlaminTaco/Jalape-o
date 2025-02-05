@@ -48,6 +48,7 @@ declare global {
     fromToBase(sourceBase: number, targetBase: number): number[];
     toInt255(): number[];
     fromInt255(): number[];
+    repeat(n: Number): T[];
   }
   interface Math {
     factorial(n: number): number;
@@ -101,3 +102,11 @@ Math.factorial = function (n: number): number {
   }
   return result;
 };
+
+
+Array.prototype.repeat = function<T>(this: Array<T>, n: number): T[] {
+  let l: T[] = [];
+  for(let i=0; i < n; i++)
+    l = l.concat(this);
+  return l;
+}

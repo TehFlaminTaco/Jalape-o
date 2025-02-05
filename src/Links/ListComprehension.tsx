@@ -24,7 +24,7 @@ function Reduce(left: Value, right: Link): Value {
 function ReduceInitial(left: Value, initial: Link, right: Link): Value {
   return AsList(left).reduce(
     (acc, x) => WithInputs([acc, x], () => right.Call(acc)),
-    initial.Call(Global.Inputs[0])
+    initial.Call()
   );
 }
 
@@ -42,7 +42,7 @@ function FoldInitial(left: Value, initial: Link, right: Link) {
   let l = AsList(left);
   if (l.length <= 0) return [];
   let outList = [];
-  let lVal = initial.Call(Global.Inputs[0]);
+  let lVal = initial.Call();
   for (let i = 0; i < l.length; i++) {
     outList.push(WithInputs([lVal, l[i]], () => right.Call(lVal)));
     lVal = l[i];
@@ -88,7 +88,7 @@ function FirstIndexOf(left: Value, predicate: Link): Value {
 }
 
 function Head(left: Value, count: Link): Value {
-  return new Vectorized(count.Call(Global.Inputs[0])).get(count => {
+  return new Vectorized(count.Call()).get(count => {
     if (typeof left === "string")
       return left.slice(0, AsNumber(count));
     return AsList(left).slice(0, AsNumber(count));
@@ -119,7 +119,7 @@ function LastIndexOf(left: Value, predicate: Link): Value {
 }
 
 function Tail(left: Value, count: Link): Value {
-  return new Vectorized(count.Call(Global.Inputs[0])).get(count => {
+  return new Vectorized(count.Call()).get(count => {
     if (typeof left === "string")
       return left.slice(AsNumber(count));
     return AsList(left).slice(AsNumber(count));
@@ -127,11 +127,11 @@ function Tail(left: Value, count: Link): Value {
 }
 
 function AtIndex(left: Value, index: Link): Value {
-  return new Vectorized(index.Call(Global.Inputs[0])).get(index=>AsList(left)[AsNumber(index)]);
+  return new Vectorized(index.Call()).get(index=>AsList(left)[AsNumber(index)]);
 }
 
 function Slice(left: Value, start: Link, length: Link): Value {
-  return new Vectorized(start.Call(Global.Inputs[0]), length.Call(Global.Inputs[0])).get((start, length)=>
+  return new Vectorized(start.Call(), length.Call()).get((start, length)=>
     AsList(left).slice(
       AsNumber(start),
       AsNumber(start) + AsNumber(length)
@@ -216,7 +216,7 @@ function Choices(left: Value): Value {
 
 function ChoicesOfLength(left: Value, right: Link): Value {
   let l = AsList(left);
-  let targetLength = AsNumber(right.Call(Global.Inputs[0]));
+  let targetLength = AsNumber(right.Call());
   let outList = [];
   for (let i = 0; i < Math.pow(2, l.length); i++) {
     let choice = _ChoiceIndex(l, i);
@@ -244,22 +244,39 @@ function ProductBy(left: Value, right: Link): Value {
 }
 
 function Union(left: Value, r: Link): Value {
-  let right = AsList(r.Call(Global.Inputs[0]));
-  left = AsList(left).concat();
+  let right = AsList(r.Call());
+  let l = AsList(left).concat();
   for(let e of right){
-    if(left.some((v:Value)=>_Equal(e,v))) continue;
-    left.push(e);
+    if(l.some((v:Value)=>_Equal(e,v))) continue;
+    l.push(e);
   }
-  return left;
+  if(typeof left === 'string')
+    return l.join('');
+  return l;
 }
 
 function Intersect(left: Value, r: Link): Value {
-  let right = AsList(r.Call(Global.Inputs[0]));
+  let right = AsList(r.Call());
   let i = [];
   for(let e of AsList(left)){
     if(!right.some((v:Value)=>_Equal(e,v))) continue;
     i.push(e);
   }
+  if(typeof left === 'string')
+    return i.join('');
+  return i;
+}
+
+function Without(left: Value, r: Link): Value {
+  let right = AsList(r.Call());
+  let l = AsList(left);
+  let i = [];
+  for(let e of l){
+    if(right.some((v:Value)=>_Equal(e,v))) continue;
+    i.push(e);
+  }
+  if(typeof left === 'string')
+    return i.join('');
   return i;
 }
 
@@ -337,6 +354,8 @@ function GroupBy(left: Value, selector: Link): Value {
     }
     g.push(e);
   }
+  if(typeof(left) === "string")
+    return groups.map(c=>c[1].join(""));
   return groups.map(c=>c[1]);
 }
 
@@ -353,6 +372,8 @@ function SplitBetween(left: Value, predicate: Link): Value {
     cur.push(l[i]);
     last = l[i];
   }
+  if(typeof(left) === "string")
+    return lists.map(c=>c.join(""));
   return lists;
 }
 
@@ -368,9 +389,29 @@ function SplitAt(left: Value, predicate: Link): Value {
       cur.push(l[i]);
     }
   }
+  if(typeof(left) === "string")
+    return lists.map(c=>c.join(""));
   return lists;
 }
 
+function Transpose(left: Value): Value {
+  if(typeof(left) === "string"){
+    // Horror oneliners make me happy.
+    return (Transpose(left.split('\n').map(c=>c.split(''))) as Value[][]).map(c=>c.map(c=>c??' ').join('')).join('\n');
+  }
+  left = AsList(left);
+  let l: Value[][] = [];
+  for(let y=0; y < left.length; y++){
+    let lefty = AsList(left[y]);
+    for(let x = 0; x < lefty.length; x++){
+      l[x] ??= [];
+      while(l[x].length < y)
+        l[x].push(undefined);
+      l[x][y] = lefty[x];
+    }
+  }
+  return l;
+}
 
 /*
     List Comprehension functions are mapped to bytes 0xD0...
@@ -417,3 +458,5 @@ QRegister("MinBy", MinBy, '⇊ₓ', 0xf3);
 QRegister("GroupBy", GroupBy, "G", 0xf4);
 QRegister("SplitBetween", SplitBetween, "⇋", 0xf5)
 QRegister("SplitAt", SplitAt, "⇋₁", 0xf6)
+QRegister("Transpose", Transpose, "‘", 0xf7);
+QRegister("Without", Without, "∖", 0xf8);

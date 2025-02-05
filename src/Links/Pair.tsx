@@ -3,7 +3,7 @@ import { QRegister } from "../Registry";
 import { Link, Value, AsList, Truthy } from "../Types";
 
 function Pair(left: Value, right: Link): Value {
-  return AsList(left).concat([right.Call(Global.Inputs[0])]);
+  return AsList(left).concat([right.Call()]);
 }
 
 function EmptyList(): Value {
@@ -11,7 +11,7 @@ function EmptyList(): Value {
 }
 
 function Range(left: Value, r: Link): Value {
-  let right = r.Call(Global.Inputs[0]);
+  let right = r.Call();
   // If left and right are numbers, return a range of numbers from left to right.
   if (typeof left === "number" && typeof right === "number") {
     let result = [];
@@ -39,7 +39,7 @@ function Range(left: Value, r: Link): Value {
 }
 
 function Box(left: Value, right: Link): Value {
-  return [right.Call(Global.Inputs[0])];
+  return [right.Call()];
 }
 
 QRegister("Pair", Pair, ",", 0x29, ",");
