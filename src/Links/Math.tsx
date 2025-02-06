@@ -426,11 +426,15 @@ function ToBase(v: Value, base: Link): Value {
     let n = Math.abs(AsNumber(v)) >>> 0;
     let b = AsNumber(base);
     if(typeof(base) === "string") b = base.length;
-    b = Math.max(0, AsNumber(b)) >>> 0;
+    b = Math.max(1, AsNumber(b)) >>> 0;
     let l: Value[] = [];
-    while(n > 0){
-      l.unshift(n % b);
-      n = (n / b) >>> 0;
+    if(b === 1)
+      l = [0].repeat(n)
+    else{
+      while(n > 0){
+        l.unshift(n % b);
+        n = (n / b) >>> 0;
+      }
     }
     if(typeof(base) === "string")
       return l.map(c=>base.charAt(AsNumber(c))).join('');
@@ -445,7 +449,9 @@ function FromBase(list: Value, base: Link): Value {
       l = l.map(c=>AsString(base).indexOf(AsString(c)));
       base = base.length;
     }
-    base = Math.max(0, AsNumber(base)) >>> 0;
+    base = Math.max(1, AsNumber(base)) >>> 0;
+    if(base === 1)
+      return l.length;
     let n = 0;
     while(l.length){
       n *= base;
@@ -535,6 +541,6 @@ QRegister("ToBase", ToBase, "b", 0x44);
 QRegister("FromBase", FromBase, "b₋", 0x45);
 QRegister("TranslateBase", TranslateBase, "bₓ", 0x46);
 QRegister("ToBinary", ToBinary, "β", 0x47);
-QRegister("FromBinary", ToBinary, "β₋", 0x48);
+QRegister("FromBinary", FromBinary, "β₋", 0x48);
 QRegister("ToHex", ToHex, "η", 0x49);
-QRegister("FromHex", ToHex, "η₋", 0x4A);
+QRegister("FromHex", FromHex, "η₋", 0x4A);

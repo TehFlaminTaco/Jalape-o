@@ -41,18 +41,21 @@ Brackets:
 const TheBeast =
   /(?<comment>#.+)|(?<string>"(?:[^"]|\\[\0-\xff])*")|(?<number>-?\d+(?:\.\d*)?|-?\d*(?:\.\d+)|-?0(?:[xX][a-fA-F0-9]+|[bB][01]+|[oO][0-7]+))|:(?<label>[\w_0-9]+)|\$(?<callLabel>[\w_0-9]+)|(?<operator>\|\||\&\&|==|<=|>=|\.\.|<>|[!@$%^&*()-=+|<>,.?/\\:;])|(?<bracket>[{}])|(?<func>[\w_0-9]+)/gim;
 
+export let LastLabelNames: string[] = [];
+
 export function ParseVerbose(verboseText: string): string {
   let s = "";
 
   const Labels: Map<string, number> = new Map();
   let ChainIndex = 0;
   let chunked = [...verboseText.matchAll(TheBeast)];
-
+  LastLabelNames = [];
   for (let i = 0; i < chunked.length; i++) {
     let part = chunked[i];
     if (part.groups === undefined) continue;
     let label = (part.groups["label"] ?? "").trim();
     if (label !== "") {
+      LastLabelNames.push(label);
       Labels.set(label.toLowerCase(), ChainIndex++);
     }
   }
@@ -66,7 +69,7 @@ export function ParseVerbose(verboseText: string): string {
       let bracket = (part.groups["bracket"] ?? "").trim();
       let callLabel = (part.groups["callLabel"] ?? "").trim();
       let comment = (part.groups["comment"] ?? "").trim();
-      let func = (part.groups["func"] ?? "").trim();
+      let func = (part.groups["func"] ?? "").trim().toLowerCase();
       let label = (part.groups["label"] ?? "").trim();
       let number = (part.groups["number"] ?? "").trim();
       let operator = (part.groups["operator"] ?? "").trim();

@@ -60,8 +60,7 @@ function Length(left: Value): Value {
 
 function Reverse(left: Value): Value {
   if (typeof left === "string") return left.split("").reverse().join("");
-  if (typeof left === "object") return AsList(left).reverse();
-  return left;
+  return AsList(left).concat().reverse();
 }
 
 function First(left: Value): Value {
@@ -413,6 +412,86 @@ function Transpose(left: Value): Value {
   return l;
 }
 
+function Repeat(left: Value, right: Link) {
+  return new Vectorized(right.Call()).get(right => {
+    if(typeof(left) === "string")  return left.repeat(AsNumber(right));
+    return AsList(left).repeat(AsNumber(right))
+  })
+}
+
+function CartesianProduct(list: Value, secondList: Link): Value {
+  let left = AsList(list);
+  let right = AsList(secondList.Call());
+  return left.flatMap(l => {
+    l = AsList(l);
+    return right.map(r => (l as Value[]).concat([r]));
+  })
+}
+
+function AllCartesianProducts(lists: Value): Value {
+  lists = AsList(lists).concat();
+  if(lists.length <= 1) return lists;
+  if(lists.length === 2){
+    let left = AsList(lists[0]);
+    let right = AsList(lists[1]);
+    return left.flatMap(l => {
+      l = AsList(l);
+      return right.map(r => (l as Value[]).concat([r]));
+    })
+  }
+  let left = AsList(lists.splice(0, 1)[0]);
+  let right = AsList(AllCartesianProducts(lists));
+  return left.flatMap(l => {
+    l = AsList(l);
+    return right.map(r => (l as Value[]).concat(r));
+  })
+}
+
+function Flatten(list: Value): Value {
+  return AsList(list).flat();
+}
+
+function FlattenUpto(list: Value, depth: Link) {
+  list = AsList(list);
+  return new Vectorized(depth.Call()).get(depth => {
+    depth = Math.max(0, AsNumber(depth)) >>> 0;
+    return list.flat(depth as 0); // Not actually 0, but shuts typescript up. :(
+  })
+}
+
+function RotateLeft(list: Value, count: Link){
+  return new Vectorized(count.Call()).get(count => {
+    count = AsNumber(count);
+    let l = AsList(list);
+    if(typeof(list) === 'number')
+      l = AsList(list.toString(2));
+    l = l.concat();
+    l = l.concat(l.splice(0, count));
+    if(typeof(list) === 'number')
+      return +('0b'+l.join());
+    if(typeof(list) === 'string')
+      return l.join();
+    return l;
+  });
+}
+
+function RotateRight(list: Value, count: Link){
+  return new Vectorized(count.Call()).get(count => {
+    count = AsNumber(count);
+    let l = AsList(list);
+    if(typeof(list) === 'number')
+      l = AsList(list.toString(2));
+    l = l.concat();
+    l = l.splice(-count).concat(l);
+    if(typeof(list) === 'number')
+      return +('0b'+l.join());
+    if(typeof(list) === 'string')
+      return l.join();
+    return l;
+  });
+}
+
+
 /*
     List Comprehension functions are mapped to bytes 0xD0...
     They should use symbols that are list related, or represent their function.
@@ -460,3 +539,10 @@ QRegister("SplitBetween", SplitBetween, "⇋", 0xf5)
 QRegister("SplitAt", SplitAt, "⇋₁", 0xf6)
 QRegister("Transpose", Transpose, "‘", 0xf7);
 QRegister("Without", Without, "∖", 0xf8);
+QRegister("Repeat", Repeat, "r", 0xf9)
+QRegister("CartesianProduct", CartesianProduct, '×', 0xfa);
+QRegister("AllCartesianProducts", AllCartesianProducts, '×ₓ', 0xfb);
+QRegister("Flatten", Flatten, "_", 0xfc);
+QRegister("FlattenUpto", FlattenUpto, "_ₓ", 0xfd);
+QRegister("RotateLeft", RotateLeft, "↺", 0xfe);
+QRegister("RotateRight", RotateRight, "↻", 0xff);
