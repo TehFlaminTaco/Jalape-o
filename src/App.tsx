@@ -6,6 +6,7 @@ import {compress, decompress} from "@remusao/smaz";
 import {
   Compile,
   Evaluate,
+  LastLabelNames,
   ParseAsPseudoLinks,
   ParseVerbose,
   TrimPseudoLinks,
@@ -33,7 +34,7 @@ import { Metas, ValidateMeta, WeaklyDefinied } from "./Meta";
 import ByteRunner from "./RunnerWorker.tsx?worker";
 import { RunData, TalkData } from "./RunData";
 
-const VERSION = 8;
+const VERSION = 9;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";
@@ -273,6 +274,29 @@ function SetupAce(e: Ace.Editor){
   })
   const wordCompleter = {
     getCompletions: function(editor: Ace.Editor, session: Ace.EditSession, pos: Ace.Point, prefix: string, callback: Ace.CompleterCallback) {
+      function getChar(col: number): string {
+        return session.getTextRange({
+          start: {row: pos.row, column: col},
+          end: {row: pos.row, column: col + 1}
+        });
+      }
+      // Walk the point back until we find either: Whitespace, a $, a :, or end of line
+      let i = pos.column - 1;
+      let c = getChar(pos.column - 1);
+      while(c.match(/\w/))
+        c = getChar(--i);
+      if(c === ':'){
+        callback(null, []);
+        return;
+      }
+      if(c === '$'){
+        callback(null, LastLabelNames.map(c=>({
+          caption: `left $${c}`,
+          value: '$'+c,
+          meta: "User",
+          docText: `left: $${c}()\n\nCalls a different chain, passing the left value as the first argument.`
+        })));
+      }
       callback(null, [...NamesToBytes.keys()].map(c=>({
         caption: Metas.getStructure(c)!,
         value: c,

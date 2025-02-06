@@ -39,7 +39,7 @@ function Join(left: Value): Value {
 
 function JoinBy(left: Value, separator: Link): Value {
   return new Vectorized(separator.Call()).get(separator => 
-    AsList(left).join(AsString(separator))
+    AsList(left).map(AsString).join(AsString(separator))
   );
 }
 
@@ -68,11 +68,11 @@ function Lines(left: Value): Value {
 }
 
 function JoinWords(left: Value): Value {
-  return AsList(left).join(" ");
+  return AsList(left).map(AsString).join(" ");
 }
 
 function JoinLines(left: Value): Value {
-  return AsList(left).join("\n");
+  return AsList(left).map(AsString).join("\n");
 }
 
 function Match(left: Value, right: Link): Value {
