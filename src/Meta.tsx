@@ -31,10 +31,10 @@ export class Metas {
 /* 9 */
 /* a */ Metas.set("chainseperator", "chainseperator", "chainseperator\nMeta\n\nSeperates two chains. Not a function.")
 /* b */
-/* c */
-/* d */
-/* e */
-/* f */
+/* c */ Metas.set("grid", "text: grid", "(text: string).grid()=>string[][]\nVectorized\n\nReturns text split by lines then characters.");
+/* d */ Metas.set("joingrid", "grid: joingrid", "(grid: string[][]).joingrid()=>string\n\nReturns grid joined by lines then characters");
+/* e */ Metas.set("padleft", "text: padleft padding, count", "(text: string|any[]).padleft(padding: any, count: number)=>string|any[]\nVectorized\n\nPads text with padding to the left until length count.");
+/* f */ Metas.set("padright", "text: padright padding, count", "(text: string|any[]).padright(padding: any, count: number)=>string|any[]\nVectorized\n\nPads text with padding to the right until length count.");
 /* 10 */ Metas.set("print", "left: print", "(left: any).print()\n\nOutputs the left-passed value followed by a newline")
 /* 11 */ Metas.set("write", "left: write", "(left: any).write()\n\nOutputs the left-passed value and nothing else")
 /* 12 */ Metas.set("replace", "haystack: replace needle, replacement", "(haystack: string).replace(needle: string, replacement: (string...)=>string)=>string\nVectorized\n\nReplaces all instances of the needle RegExp via replacement.")
@@ -222,11 +222,11 @@ export class Metas {
 /* c8 */ Metas.set("fourgroup", "left: fourgroup l0, l1, l2, l3", "(left: any).fourgroup(l0: any, l1: any, l2: any, l3: any)=>any\n\nExecutes all link arguments in order and returns their result.")
 /* c9 */ Metas.set("fivegroup", "left: fivegroup l0, l1, l2, l3, l4", "(left: any).fivegroup(l0: any, l1: any, l2: any, l3: any, l4: any)=>any\n\nExecutes all link arguments in order and returns their result.")
 /* ca */
-/* cb */
-/* cc */
-/* cd */
-/* ce */
-/* cf */
+/* cb */ Metas.set("apply", "list: apply method", "(list: any[]).apply(method: (any,any)=>any)=>any\n\nRun method passing each element of list as arguments.");
+/* cc */ Metas.set("zipby", "left: zipby arg0, arg1", "(left: any[]).zipby(method: (any,any), right: any[])=>any[]\n\nRun method on each indexwise pair of elements from left and right, returning the resulting single list. Ignores indexes which only appear on one list");
+/* cd */ Metas.set("zip", "left: zip arg0", "(left: any[]).zip(right: any[])=>any[][]\n\nReturn left with indexwise pairs of right concatenated to each element. Ignores indexes which only appear on one list");
+/* ce */ Metas.set("zipmaximally", "left: zipmaximally right", "(left: any[]).zipmaximally(right: any[])=>any[]\n\nReturn left with indexwise pairs of right concatenated to each element. Where only one list has an element, returns it alone.");
+/* cf */ Metas.set("indexmap", "list: indexmap selector", "(list: any).indexmap(selector: (any,number)=>any)=>any[]\n\nReturns left mapped over selector with indexes passed as the second argument");
 /* d0 */ Metas.set("map", "list: map selector", "(list: any[]).map(selector: (any)=>any)=>any[]\n\nReturns a new version of list with all values mutated by selector")
 /* d1 */ Metas.set("filter", "list: filter predicate", "(list any[]).filter(predicate: (any)=>any)=>any[]\n\nReturns a new version of list with only values in which predicate returns truthy")
 /* d2 */ Metas.set("reduce", "list: reduce accumulator", "(list: any[]).reduce(accumulator: (any, any)=>any)=>any[]\n\nReturns the result of repeated accumulation across list. The left input to accumulator is the result of the last, or the first value initially.")

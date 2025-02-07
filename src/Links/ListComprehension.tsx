@@ -7,6 +7,10 @@ function Map(left: Value, right: Link): Value {
   return AsList(left).map((x) => right.Call(x));
 }
 
+function IndexMap(left: Value, right: Link): Value {
+  return AsList(left).map((x, i) => right.Call(x, i));
+}
+
 function DeepMap(left: Value, right: Link): Value {
   return new Vectorized(left).get(v=>right.Call(v));
 }
@@ -491,6 +495,40 @@ function RotateRight(list: Value, count: Link){
   });
 }
 
+function ZipBy(left: Value, method: Link, right: Link){
+  let r = AsList(right.Call());
+  let l = AsList(left);
+  let len = Math.min(l.length, r.length);
+  let zipped = [];
+  for(let i=0; i < len; i++)
+    zipped[i] = method.Call(l[i], r[i]);
+  return zipped;
+}
+
+
+function Zip(left: Value, right: Link){
+  let r = AsList(right.Call());
+  let l = AsList(left);
+  let len = Math.min(l.length, r.length);
+  let zipped = [];
+  for(let i=0; i < len; i++)
+    zipped[i] = AsList(l[i]).concat(AsList(r[i]))
+  return zipped;
+}
+
+function ZipMaximally(left: Value, right: Link){
+  let r = AsList(right.Call());
+  let l = AsList(left);
+  let len = Math.min(l.length, r.length);
+  let zipped = [];
+  for(let i=0; i < len; i++)
+    zipped[i] = AsList(l[i] ?? []).concat(AsList(r[i] ?? []))
+  return zipped;
+}
+
+function Apply(list: Value, method: Link){
+  return method.Call(...AsList(list));
+}
 
 /*
     List Comprehension functions are mapped to bytes 0xD0...
@@ -498,6 +536,11 @@ function RotateRight(list: Value, count: Link){
     Duplicate symbols are never allowed, but substring suffixes are allowed. eg. '↧' and '↧₁'
 */
 
+QRegister("Apply", Apply, "↩₋", 0xcb);
+QRegister("ZipBy", ZipBy, "↭ₓ", 0xcc);
+QRegister("Zip", Zip, "↭", 0xcd);
+QRegister("ZipMaximally", ZipMaximally, "↭₊", 0xce);
+QRegister("IndexMap", IndexMap, "↦₁", 0xcf);
 QRegister("Map", Map, "↦", 0xd0);
 QRegister("Filter", Filter, "↥", 0xd1);
 QRegister("Reduce", Reduce, "↧", 0xd2);

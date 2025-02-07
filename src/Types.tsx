@@ -57,11 +57,11 @@ export class Link {
     this.Arguments = args;
   }
 
-  Call(left: Value|(typeof NoArgument) = NoArgument): Value {
-    if(left === NoArgument)
+  Call(...left: Value[]): Value {
+    if(left.length === 0)
       return this.Method(Global.Inputs[0], ...this.Arguments);
     else
-      return WithInputs([left], ()=>this.Method(left, ...this.Arguments));
+      return WithInputs(left, ()=>this.Method(left[0], ...this.Arguments));
   }
 }
 
