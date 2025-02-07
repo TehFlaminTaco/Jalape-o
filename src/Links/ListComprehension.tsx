@@ -124,8 +124,9 @@ function LastIndexOf(left: Value, predicate: Link): Value {
 function Tail(left: Value, count: Link): Value {
   return new Vectorized(count.Call()).get(count => {
     if (typeof left === "string")
-      return left.slice(AsNumber(count));
-    return AsList(left).slice(AsNumber(count));
+      return left.slice(left.length - AsNumber(count));
+    left = AsList(left)
+    return AsList(left).slice(AsList(left).length - AsNumber(count));
   });
 }
 

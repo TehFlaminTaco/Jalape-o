@@ -140,7 +140,7 @@ export class Metas {
 /* 76 */ Metas.set("acos", "n: acos", "(n: number).acos()=>number\nVectorized\n\nReturns the result of standard trigonometry acos(n)")
 /* 77 */ Metas.set("atan", "n: atan", "(n: number).atan()=>number\nVectorized\n\nReturns the result of standard trigonometry atan(n)")
 /* 78 */ Metas.set("atan2", "n: atan2", "(y: number).atan2(x: number)=>number\nVectorized\n\nReturns the result of standard trigonometry atan2(y, x)")
-/* 79 */
+/* 79 */ Metas.set("abs", "n: number", "(n: number).abs()=>number\nVectorized\n\nReturns the absolute value of n");
 /* 7a */
 /* 7b */
 /* 7c */

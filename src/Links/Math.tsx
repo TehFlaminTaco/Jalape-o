@@ -425,6 +425,10 @@ function ATan2(y: Value, x: Link): Value {
   return new Vectorized(y, x.Call()).get((y: Value, x: Value) => Math.atan2(AsNumber(y), AsNumber(x)));
 }
 
+function Abs(n: Value): Value {
+  return new Vectorized(n).get((n: Value) => Math.abs(AsNumber(n)));
+}
+
 function ToBase(v: Value, base: Link): Value {
   return new Vectorized(v, base.Call()).get((v, base)=>{
     let n = Math.abs(AsNumber(v)) >>> 0;
@@ -540,6 +544,7 @@ QRegister("ASin", ASin, "◿₋", 0x75);
 QRegister("ACos", ACos, "◹₋", 0x76);
 QRegister("ATan", ATan, "◸₋", 0x77);
 QRegister("ATan2", ATan2, "◸₂", 0x78);
+QRegister("Abs", Abs, "-₊", 0x79);
 QRegister("ToNumber", ToNumber, "N", 0x43);
 QRegister("ToBase", ToBase, "b", 0x44);
 QRegister("FromBase", FromBase, "b₋", 0x45);
