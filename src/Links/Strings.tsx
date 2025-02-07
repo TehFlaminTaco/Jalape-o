@@ -167,6 +167,50 @@ function CapitalizeWords(left: Value): Value {
   return new Vectorized(left).get(left=>AsString(left).capitalizeWords());
 }
 
+
+function Grid(str: Value): Value {
+  return new Vectorized(str).get(str=>{
+      let g = AsString(str)
+        .split('\n')
+      let lineMax = Math.max(...g.map(c=>c.length));
+      return g.map(c=>c.padEnd(lineMax, ' ').split(''));
+    });
+}
+
+function JoinGrid(grid: Value): Value {
+  return AsList(grid)
+    .map(c=>AsList(c)
+      .map(AsString)
+      .join('')
+    ).join('\n');
+}
+
+function PadLeft(str: Value, padding: Link, count: Link): Value {
+  let c = AsNumber(count.Call());
+  if(typeof(str) === "string"){
+    let p = AsString(padding.Call());
+    return p.repeat(Math.ceil(c / p.length)).substring(0, c - str.length) + str
+  }
+  let l = AsList(str).concat();
+  let p = padding.Call();
+  while(l.length < c)
+    l = [p].concat(l);
+  return l;
+}
+
+function PadRight(str: Value, padding: Link, count: Link): Value {
+  let c = AsNumber(count.Call());
+  if(typeof(str) === "string"){
+    let p = AsString(padding.Call());
+    return str + p.repeat(Math.ceil(c / p.length)).substring(str.length, Math.max(str.length, c))
+  }
+  let l = AsList(str).concat();
+  let p = padding.Call();
+  while(l.length < c)
+    l = l.concat([p]);
+  return l;
+}
+
 QRegister("Print", Print, "P", 0x10);
 QRegister("Write", Write, "W", 0x11);
 QRegister("Replace", Replace, "R", 0x12);
@@ -190,3 +234,7 @@ QRegister("Char", Char, "B₋", 0x1F);
 QRegister("Upper", Upper, "U", 0x2B);
 QRegister("Lower", Lower, "U₋", 0x2C);
 QRegister("CapitalizeWords", CapitalizeWords, "T", 0x2D);
+QRegister("Grid", Grid, "G₊", 0x0C);
+QRegister("JoinGrid", JoinGrid, "G₋", 0x0D);
+QRegister("PadLeft", PadLeft, "L₊", 0x0E);
+QRegister("PadRight", PadRight, "R₊", 0x0F);
