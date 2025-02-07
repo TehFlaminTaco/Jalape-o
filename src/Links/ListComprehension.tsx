@@ -512,7 +512,7 @@ function Zip(left: Value, right: Link){
   let len = Math.min(l.length, r.length);
   let zipped = [];
   for(let i=0; i < len; i++)
-    zipped[i] = AsList(l[i]).concat(AsList(r[i]))
+    zipped[i] = AsList(l[i]).concat(AsList(r[i], true))
   return zipped;
 }
 
@@ -522,7 +522,7 @@ function ZipMaximally(left: Value, right: Link){
   let len = Math.min(l.length, r.length);
   let zipped = [];
   for(let i=0; i < len; i++)
-    zipped[i] = AsList(l[i] ?? []).concat(AsList(r[i] ?? []))
+    zipped[i] = AsList(l[i] ?? []).concat(AsList(r[i] ?? [], true))
   return zipped;
 }
 

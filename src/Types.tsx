@@ -24,8 +24,8 @@ export function AsString(v: Value): string {
   return `${v}`;
 }
 
-export function AsList(v: Value): Value[] {
-  if (typeof v === "string") return v.split('');
+export function AsList(v: Value, boxString: boolean = false): Value[] {
+  if (typeof v === "string" && !boxString) return v.split('');
   if (typeof v !== "object") return [v];
   return v;
 }
@@ -63,13 +63,24 @@ export class Link {
     else
       return WithInputs(left, ()=>this.Method(left[0], ...this.Arguments));
   }
+
+  CallSoftly(left: Value): Value {
+    return this.Method(left, ...this.Arguments);
+  }
 }
 
 export class Chain {
   Links: Link[] = [];
   Call(first: Value): Value {
     for (let l of this.Links) {
-      first = l.Call(first);
+      first = l.CallSoftly(first);
+    }
+    return first;
+  }
+
+  CallSoftly(first: Value): Value {
+    for (let l of this.Links) {
+      first = l.CallSoftly(first);
     }
     return first;
   }

@@ -76,6 +76,7 @@ function FloatConstant(this: Link): Value {
 export function NumberConstant(n: number): string {
   if (n === -1) return `-₁`;
   if (n === 0.5) return `½`;
+  if (n === 100) return "e₂";
   if (n < 0) return `-${NumberConstant(-n)}`;
   if (n % 1 === 0 && n >= 0 && n <= 9) {
     return `${n >>> 0}`;
