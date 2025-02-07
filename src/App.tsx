@@ -34,7 +34,7 @@ import { Metas, ValidateMeta, WeaklyDefinied } from "./Meta";
 import ByteRunner from "./RunnerWorker.tsx?worker";
 import { RunData, TalkData } from "./RunData";
 
-const VERSION = 11;
+const VERSION = 12;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";

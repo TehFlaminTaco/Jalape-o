@@ -1,6 +1,6 @@
 import { Global } from "../GlobalState";
 import { QRegister } from "../Registry";
-import { AsNumber, Link, Value } from "../Types";
+import { AsNumber, Link, Value, Vectorized } from "../Types";
 
 function Store0(left: Value): Value {
     Global.Storage[0] = left;
@@ -18,7 +18,10 @@ function Store2(left: Value): Value {
 }
 
 function StoreX(left: Value, x: Link): Value {
-    Global.Storage[AsNumber(x.Call())] = left;
+    new Vectorized(x.Call()).get(x=>{
+        Global.Storage[AsNumber(x)] = left;
+        return left;
+    });
     return left;
 }
 
@@ -35,7 +38,9 @@ function Load2(): Value {
 }
 
 function LoadX(_: Value, x: Link): Value {
-    return Global.Storage[AsNumber(x.Call())];
+    return new Vectorized(x.Call()).get(x=>{
+        return Global.Storage[AsNumber(x)];
+    });
 }
 //₀₁₂ₓ
 QRegister("Store0", Store0, '⤞₀', 0x80);
