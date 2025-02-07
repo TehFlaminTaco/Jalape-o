@@ -3,7 +3,7 @@ import { QRegister } from "../Registry";
 import { Link, Value, AsList, Truthy } from "../Types";
 
 function Pair(left: Value, right: Link): Value {
-  return AsList(left).concat([right.Call()]);
+  return AsList(left, true).concat([right.Call()]);
 }
 
 function EmptyList(): Value {

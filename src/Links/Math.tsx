@@ -64,6 +64,10 @@ function Multiply(left: Value, r: Link): Value {
     if (typeof left === "string") {
       return left.repeat(AsNumber(right));
     }
+    // Visaversa
+    if (typeof right === "string") {
+      return right.repeat(AsNumber(left));
+    }
     // If both are numbers, multiply them.
     if (typeof left === "number" && typeof right === "number") {
       return left * right;
