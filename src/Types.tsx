@@ -26,6 +26,7 @@ export function AsString(v: Value): string {
 
 export function AsList(v: Value, boxString: boolean = false): Value[] {
   if (typeof v === "string" && !boxString) return v.split('');
+  if (typeof v === "number") return `${v}`.split('').map(c=>+c);
   if (typeof v !== "object") return [v];
   return v;
 }

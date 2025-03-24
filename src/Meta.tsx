@@ -65,7 +65,7 @@ export class Metas {
 /* 2b */ Metas.set("upper", "str: upper", "(str: string).upper()=>string\nVectorized\n\nReturns str as an uppercase string")
 /* 2c */ Metas.set("lower", "str: lower", "(str: string).lower()=>string\nVectorized\n\nReturns str as a lowercase string")
 /* 2d */ Metas.set("capitalizewords", "str: capitalizewords", "(str: string).capitalizewords()=>string\nVectorized\n\nReturns str with the start of each space delimiated 'word' capitalized")
-/* 2e */ Metas.set("range", "start: range end", "(start: any).range(end: any)=>any\n\nIf start and end are numbers, returns a list of numbers from start to end inclusive.\nIf start or end are lists, concatenates the lists together\nIf start or end are strings, concatenates the strings together")
+/* 2e */ Metas.set("to", "start: to end", "(start: any).to(end: any)=>any\n\nIf start and end are numbers, returns a list of numbers from start to end inclusive.\nIf start or end are lists, concatenates the lists together\nIf start or end are strings, concatenates the strings together")
 /* 2f */ Metas.set("box", "box value", "box(value: any)=>any[]\n\nReturns a list contaning only value.")
 /* 30 */ Metas.set("zero", "zero", "zero()=>number\n\nReturns the constant number zero")
 /* 31 */ Metas.set("one", "one", "one()=>number\n\nReturns the constant number one")
@@ -141,10 +141,10 @@ export class Metas {
 /* 77 */ Metas.set("atan", "n: atan", "(n: number).atan()=>number\nVectorized\n\nReturns the result of standard trigonometry atan(n)")
 /* 78 */ Metas.set("atan2", "n: atan2", "(y: number).atan2(x: number)=>number\nVectorized\n\nReturns the result of standard trigonometry atan2(y, x)")
 /* 79 */ Metas.set("abs", "n: number", "(n: number).abs()=>number\nVectorized\n\nReturns the absolute value of n");
-/* 7a */
-/* 7b */
-/* 7c */
-/* 7d */
+/* 7a */ Metas.set("floor", "n: floor", "(n: number).floor()\n\nRounds n to negative infinity");
+/* 7b */ Metas.set("ceil", "n: ceil", "(n: number).ceil()\n\nRounds n to infinity");
+/* 7c */ Metas.set("increment", "left: increment", "(left: number).increment()=>number\nVectorized\n\nReturns the value of left + 1");
+/* 7d */ Metas.set("decrement", "left: decrement", "(left: number).decrement()=>number\nVectorized\n\nReturns the value of left - 1");
 /* 7e */
 /* 7f */
 /* 80 */ Metas.set("store0", "value: store0", "(value: any).store0()=>any\n\nStores value into box[0] and returns it")
@@ -182,7 +182,7 @@ export class Metas {
 /* a0 */ Metas.set("if", "condition: if then", "(condition: any).if(then: ()=>any)=>any\n\nIf condition is truthy, returns the result of then, otherwise, returns condition.")
 /* a1 */ Metas.set("ifelse", "condition: ifelse then, else", "(condition: any).ifelse(then: ()=>any, else: ()=>any)=>any\n\nif condition is truthy, retursn the result of then, otherwise returns the result of else.")
 /* a2 */ Metas.set("while", "initial: while condition, body", "(initial: any).while(condition: (any)=>any, body: (any)=>any)=>any\n\nWhile the result of condition(initial) is truthy, sets initial to the result of body(initial). Returns the current value of initial.")
-/* a3 */
+/* a3 */ Metas.set("toliteral", "left: toliteral", "(left: any).toliteral()\n\nReturns left as a CharacterCode literal. Does not perform any optimizations.");
 /* a4 */
 /* a5 */
 /* a6 */
@@ -195,11 +195,11 @@ export class Metas {
 /* ad */
 /* ae */
 /* af */
-/* b0 */
-/* b1 */
-/* b2 */
-/* b3 */
-/* b4 */
+/* b0 */ Metas.set("antihead", "list: antihead count", "(list: any[]|string).antihead(count: number)=>any[]|string\nVectorized\n\nReturns list without the first elements.");
+/* b1 */ Metas.set("antitail", "list: antitail count", "(list: any[]|string).antitail(count: number)=>any[]|string\nVectorized\n\nReturns list without the last elements.");
+/* b2 */ Metas.set("range", "count: range", "(count: number).range()=>number[]\nVectorized\n\nReturns a list of numbers from 1 to count, or from -1 to count if count is negative.");
+/* b3 */ Metas.set("prefixes", "list: prefixes", "(list: any[]).prefixes()=>any[][]\n\nReturns all prefixes of list. eg. [1,2,3] becomes [[1],[1,2],[1,2,3]]");
+/* b4 */ Metas.set("suffixes", "list: suffixes", "(list: any[]).suffixes()=>any[][]\n\nReturns all suffixes of list. eg. [1,2,3] becomes [[3],[2,3],[1,2,3]]");
 /* b5 */
 /* b6 */
 /* b7 */

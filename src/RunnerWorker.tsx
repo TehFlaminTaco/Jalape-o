@@ -8,7 +8,7 @@ import "./Links/LinkGroup";
 import "./Links/CallChain";
 import "./Links/Negative";
 import "./Links/StringConstant";
-import "./Links/Pair";
+import "./Links/ListConstants";
 import "./Links/Input";
 import "./Links/Math";
 import "./Links/ListComprehension";
@@ -16,6 +16,9 @@ import "./Links/Noop";
 import "./Links/Strings";
 import "./Links/ControlFlow";
 import "./Links/Store";
+import { ValidateMeta } from "./Meta";
+
+ValidateMeta();
 
 self.onmessage = (event: MessageEvent<RunData>) => {
     try {

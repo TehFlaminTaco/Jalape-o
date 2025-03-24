@@ -503,6 +503,22 @@ function ToNumber(left: Value): Value {
   return AsNumber(left);
 }
 
+function Floor(left: Value): Value {
+  return new Vectorized(left).get(left => Math.floor(AsNumber(left)));
+}
+
+function Ceil(left: Value): Value {
+  return new Vectorized(left).get(left => Math.ceil(AsNumber(left)));
+}
+
+function Decrement(left: Value): Value {
+  return new Vectorized(left).get(left => AsNumber(left) - 1);
+}
+
+function Increment(left: Value): Value {
+  return new Vectorized(left).get(left => AsNumber(left) + 1);
+}
+
 QRegister("Add", Add, "+", 0x50, "+");
 QRegister("Subtract", Subtract, "-", 0x51, "-");
 QRegister("Multiply", Multiply, "*", 0x52, "*");
@@ -545,6 +561,8 @@ QRegister("ACos", ACos, "◹₋", 0x76);
 QRegister("ATan", ATan, "◸₋", 0x77);
 QRegister("ATan2", ATan2, "◸₂", 0x78);
 QRegister("Abs", Abs, "-₊", 0x79);
+QRegister("Floor", Floor, "⭳", 0x7A);
+QRegister("Ceil", Ceil, "⭱", 0x7B);
 QRegister("ToNumber", ToNumber, "N", 0x43);
 QRegister("ToBase", ToBase, "b", 0x44);
 QRegister("FromBase", FromBase, "b₋", 0x45);
@@ -553,3 +571,5 @@ QRegister("ToBinary", ToBinary, "β", 0x47);
 QRegister("FromBinary", FromBinary, "β₋", 0x48);
 QRegister("ToHex", ToHex, "η", 0x49);
 QRegister("FromHex", FromHex, "η₋", 0x4A);
+QRegister("Increment", Increment, "∆", 0x7C);
+QRegister("Decrement", Decrement, "∇", 0x7D);

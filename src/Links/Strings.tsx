@@ -1,7 +1,9 @@
 import { Global, WithInputs } from "../GlobalState";
 import { VectorizedOver } from "../Helpers";
-import { QRegister } from "../Registry";
+import { QRegister, ToCharacters } from "../Registry";
 import { AsList, AsNumber, AsString, Link, Value, Vectorized } from "../Types";
+import { NumberConstant } from "./NumberConstant";
+import { CompressString } from "./StringConstant";
 
 function Print(left: Value): Value {
   Global.Output += `${AsString(left)}\n`;
@@ -211,6 +213,22 @@ function PadRight(str: Value, padding: Link, count: Link): Value {
   return l;
 }
 
+function ToLiteral(str: Value): Value {
+  if(typeof(str) === "string"){
+    return ToCharacters(CompressString(str).reverse());
+  }
+  if(typeof(str) === "number"){
+    return NumberConstant(str);
+  }
+  if(typeof(str) === "object"){
+    if(str.length === 0)
+      return `∅`
+    if(str.length === 1)
+      return `□${ToLiteral(str[0])}`;
+    return `{□${str.map(ToLiteral).join(',')}}`
+  }
+}
+
 QRegister("Print", Print, "P", 0x10);
 QRegister("Write", Write, "W", 0x11);
 QRegister("Replace", Replace, "R", 0x12);
@@ -238,3 +256,4 @@ QRegister("Grid", Grid, "G₊", 0x0C);
 QRegister("JoinGrid", JoinGrid, "G₋", 0x0D);
 QRegister("PadLeft", PadLeft, "L₊", 0x0E);
 QRegister("PadRight", PadRight, "R₊", 0x0F);
+QRegister("ToLiteral", ToLiteral, "Q", 0xA3);
