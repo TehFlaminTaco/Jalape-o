@@ -1,6 +1,5 @@
-import { Global } from "../GlobalState";
 import { QRegister } from "../Registry";
-import { Link, Value, AsList, Truthy } from "../Types";
+import { Link, Value, AsList, Truthy, Vectorized, AsNumber } from "../Types";
 
 function Pair(left: Value, right: Link): Value {
   return AsList(left, true).concat([right.Call()]);
@@ -10,7 +9,7 @@ function EmptyList(): Value {
   return [];
 }
 
-function Range(left: Value, r: Link): Value {
+function To(left: Value, r: Link): Value {
   let right = r.Call();
   // If left and right are numbers, return a range of numbers from left to right.
   if (typeof left === "number" && typeof right === "number") {
@@ -38,11 +37,27 @@ function Range(left: Value, r: Link): Value {
   return Truthy(left) ? left : right;
 }
 
+function Range(left: Value): Value {
+  return new Vectorized(left).get(n => {
+    let num = AsNumber(n);
+    let res: number[] = [];
+    if(num < 0){
+      for(let i=-1; i >= num; i--)
+        res.push(i)
+      return res;
+    }else for(let i=1; i <= num; i++){
+      res.push(i)
+    }
+    return res;
+  })
+}
+
 function Box(left: Value, right: Link): Value {
   return [right.Call()];
 }
 
 QRegister("Pair", Pair, ",", 0x29, ",");
 QRegister("EmptyList", EmptyList, "∅", 0x2A);
-QRegister("Range", Range, "‥", 0x2e, "..");
+QRegister("To", To, "‥", 0x2e, "..");
+QRegister("Range", Range, "⇹", 0xB2);
 QRegister("Box", Box, "□", 0x2f, "□");

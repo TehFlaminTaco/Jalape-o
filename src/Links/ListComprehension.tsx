@@ -98,6 +98,14 @@ function Head(left: Value, count: Link): Value {
   });
 }
 
+function AntiHead(left: Value, count: Link): Value {
+  return new Vectorized(count.Call()).get(count => {
+    if (typeof left === "string")
+      return left.slice(AsNumber(count));
+    return AsList(left).slice(AsNumber(count));
+  });
+}
+
 function Last(left: Value): Value {
   if (typeof left === "string") return left.slice(-1);
   return AsList(left).last();
@@ -127,6 +135,15 @@ function Tail(left: Value, count: Link): Value {
       return left.slice(left.length - AsNumber(count));
     left = AsList(left)
     return AsList(left).slice(AsList(left).length - AsNumber(count));
+  });
+}
+
+function AntiTail(left: Value, count: Link): Value {
+  return new Vectorized(count.Call()).get(count => {
+    if (typeof left === "string")
+      return left.slice(0, left.length - AsNumber(count));
+    left = AsList(left)
+    return AsList(left).slice(0, AsList(left).length - AsNumber(count));
   });
 }
 
@@ -453,7 +470,7 @@ function AllCartesianProducts(lists: Value): Value {
 }
 
 function Flatten(list: Value): Value {
-  return AsList(list).flat();
+  return AsList(list).flat(Infinity as 0);
 }
 
 function FlattenUpto(list: Value, depth: Link) {
@@ -473,9 +490,9 @@ function RotateLeft(list: Value, count: Link){
     l = l.concat();
     l = l.concat(l.splice(0, count));
     if(typeof(list) === 'number')
-      return +('0b'+l.join());
+      return +('0b'+l.join(''));
     if(typeof(list) === 'string')
-      return l.join();
+      return l.join('');
     return l;
   });
 }
@@ -489,9 +506,9 @@ function RotateRight(list: Value, count: Link){
     l = l.concat();
     l = l.splice(-count).concat(l);
     if(typeof(list) === 'number')
-      return +('0b'+l.join());
+      return +('0b'+l.join(''));
     if(typeof(list) === 'string')
-      return l.join();
+      return l.join('');
     return l;
   });
 }
@@ -531,6 +548,32 @@ function Apply(list: Value, method: Link){
   return method.Call(...AsList(list));
 }
 
+function Prefixes(list: Value){
+  let l: Value[]|string = typeof(list) === "string" ? list : AsList(list);
+  if(typeof(list) === "number")
+    l = `${list}`;
+  let res: (Value[]|string)[] = []
+  for(let i=1; i <= l.length; i++){
+    res.push(l.slice(0, i))
+  }
+  if(typeof(list) === "number")
+    return res.map(c=>+c);
+  return res;
+}
+
+function Suffixes(list: Value){
+  let l: Value[]|string = typeof(list) === "string" ? list : AsList(list);
+  if(typeof(list) === "number")
+    l = `${list}`;
+  let res: (Value[]|string)[] = []
+  for(let i=1; i <= l.length; i++){
+    res.push(l.slice(l.length - i, i))
+  }
+  if(typeof(list) === "number")
+    return res.map(c=>+c);
+  return res;
+}
+
 /*
     List Comprehension functions are mapped to bytes 0xD0...
     They should use symbols that are list related, or represent their function.
@@ -554,10 +597,12 @@ QRegister("First", First, "⇤", 0xd8);
 QRegister("FirstWhere", FirstWhere, "⇤₀", 0xd9);
 QRegister("FirstIndexOf", FirstIndexOf, "⇤₁", 0xdA);
 QRegister("Head", Head, "⇤ₓ", 0xdB);
+QRegister("AntiHead", AntiHead, "⇤₋", 0xB0);
 QRegister("Last", Last, "⇥", 0xdC);
 QRegister("LastWhere", LastWhere, "⇥₀", 0xdD);
 QRegister("LastIndexOf", LastIndexOf, "⇥₁", 0xdE);
 QRegister("Tail", Tail, "⇥ₓ", 0xdF);
+QRegister("AntiTail", AntiTail, "⇥₋", 0xB1);
 QRegister("AtIndex", AtIndex, "⇪", 0xE0);
 QRegister("Slice", Slice, "⇪ₓ", 0xE1);
 QRegister("Sort", Sort, "⇅", 0xE2);
@@ -590,3 +635,5 @@ QRegister("Flatten", Flatten, "_", 0xfc);
 QRegister("FlattenUpto", FlattenUpto, "_ₓ", 0xfd);
 QRegister("RotateLeft", RotateLeft, "↺", 0xfe);
 QRegister("RotateRight", RotateRight, "↻", 0xff);
+QRegister("Prefixes", Prefixes, "⥅", 0xb3);
+QRegister("Suffixes", Suffixes, "⥆", 0xb4);

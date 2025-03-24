@@ -17,7 +17,7 @@ import "./Links/LinkGroup";
 import "./Links/CallChain";
 import "./Links/Negative";
 import "./Links/StringConstant";
-import "./Links/Pair";
+import "./Links/ListConstants";
 import "./Links/Input";
 import "./Links/Math";
 import "./Links/ListComprehension";
@@ -34,7 +34,7 @@ import { Metas, ValidateMeta, WeaklyDefinied } from "./Meta";
 import ByteRunner from "./RunnerWorker.tsx?worker";
 import { RunData, TalkData } from "./RunData";
 
-const VERSION = 12;
+const VERSION = 13;
 
 let lastByteCode: Uint8Array = new Uint8Array([]);
 let byteSource: "verbose"|"hex" = "verbose";

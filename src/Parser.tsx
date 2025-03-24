@@ -39,7 +39,7 @@ Brackets:
 */
 
 const TheBeast =
-  /(?<comment>#.+)|(?<string>"(?:[^"]|\\[\0-\xff])*")|(?<number>-?\d+(?:\.\d*)?|-?\d*(?:\.\d+)|-?0(?:[xX][a-fA-F0-9]+|[bB][01]+|[oO][0-7]+))|:(?<label>[\w_0-9]+)|\$(?<callLabel>[\w_0-9]+)|(?<operator>\|\||\&\&|==|<=|>=|\.\.|<>|[!@$%^&*()-=+|<>,.?/\\:;])|(?<bracket>[{}])|(?<func>[\w_0-9]+)/gim;
+  /(?<comment>#.+)|(?<string>"(?:\\[\0-\xff]|[^"])*")|(?<number>-?\d+(?:\.\d*)?|-?\d*(?:\.\d+)|-?0(?:[xX][a-fA-F0-9]+|[bB][01]+|[oO][0-7]+))|:(?<label>[\w_0-9]+)|\$(?<callLabel>[\w_0-9]+)|(?<operator>\|\||\&\&|==|<=|>=|\.\.|<>|[!@$%^&*()-=+|<>,.?/\\:;])|(?<bracket>[{}])|(?<func>[\w_0-9]+)/gim;
 
 export let LastLabelNames: string[] = [];
 
